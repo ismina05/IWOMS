@@ -54,7 +54,7 @@ Skrip otomasi berbasis Node.js untuk memvalidasi alur sistem dan visual antarmuk
 ---
 
 ## 🚀 Cara Menjalankan Secara Lokal
-Cukup buka file `index.html` di browser modern apa saja, atau jalankan local server:
+Bbuka file `index.html` di browser apa saja, atau jalankan local server:
 ```bash
 # Menggunakan Python
 python -m http.server 3000
