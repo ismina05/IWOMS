@@ -1,0 +1,9 @@
+# Dependencies & Test Artifacts
+scratch/
+*.png
+*.bak
+*.log
+
+# System files
+Thumbs.db
+.DS_Store
