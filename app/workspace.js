@@ -165,6 +165,7 @@
     }
     watch(activeRoleKey, onRoleChange);
     watch(referenceMode, () => { selectedId.value = null; selectedWO.value = null; sync(); }, { flush: 'sync' });
+    const dashboardOrders = computed(() => referenceMode.value ? workOrders.value : visibleOrders.value);
     const changed = event => { if (event.key === KEY) { notice.value = 'Ada perubahan dari tab lain. Muat ulang untuk melihat versi terbaru.'; } };
     global.addEventListener('storage', changed);
     onUnmounted(() => global.removeEventListener('storage', changed));
@@ -176,9 +177,8 @@
     const workflow = reactive({
       error, notice, busy, referenceMode, selected, form, tasks, orders: visibleOrders, actor,
       dashboardFilter:{period:'',search:'',status:'',category:'all'}, dashboardPage:1,
-      dashboardRows(){return IwomsReporting.rows(visibleOrders.value,tasks.value,this.dashboardFilter);},
-      dashboardCount(category){return IwomsReporting.rows(visibleOrders.value,tasks.value,{...this.dashboardFilter,category}).length;},
-      dashboardStatuses:computed(()=>[...new Set(visibleOrders.value.map(wo=>wo.status))].sort()),
+      dashboardRows(category = this.dashboardFilter.category){return IwomsReporting.rows(dashboardOrders.value,tasks.value,{...this.dashboardFilter,category});},
+      dashboardStatuses:computed(()=>[...new Set(dashboardOrders.value.map(wo=>wo.status))].sort()),
       monthlyOpened: '',
       openMonthly(report){this.monthlyOpened=report.id;activeMenu.value='pelaporan';activeScreenCode.value='R05';},
       distributionAction(report){return {Node_kirim_laporan_bulanan:['monthly-send','Kirim ke Komisi Unit/Wilayah'],Node_terima_laporan_unit:['monthly-forward','Terima dan teruskan ke Komisi Pusat'],Node_terima_laporan_pusat:['monthly-receive','Catat penerimaan Pusat']}[report.nodeId];},
@@ -188,6 +188,7 @@
       },
       monthPeriod:'', monthNotes:{},
       monthlyReports:computed(()=>data.value.reports.filter(report=>report.unitId===actor.value.unitId)),
+      monthlyTasks:computed(()=>referenceMode.value ? [] : data.value.reports.filter(report=>report.unitId===actor.value.unitId && report.nodeId!=='Node_end_bulanan' && preparation.graph.nodes[report.nodeId]?.role===actor.value.role)),
       monthlyOwner(report){return preparation.graph.nodes[report.nodeId]?.role;},
       monthlyTitle(report){return preparation.graph.nodes[report.nodeId]?.title;},
       monthlyAction(action,report){

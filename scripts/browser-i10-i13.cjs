@@ -1,5 +1,5 @@
 const fs=require('node:fs');const path=require('node:path');const {spawn}=require('node:child_process');const http=require('node:http');const assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..');const output=path.join(root,'docs/execution-i10-i13');fs.mkdirSync(output,{recursive:true});
+const root=path.resolve(__dirname,'..');const output=process.env.IWOMS_TEST_OUTPUT || path.join(root,'docs/execution-i10-i13');fs.mkdirSync(output,{recursive:true});
 async function browserChecks() {
   const server = http.createServer((req, res) => {
     const requested = new URL(req.url, 'http://localhost').pathname;
@@ -62,6 +62,23 @@ async function browserChecks() {
     async function screenshot(name) {
       await new Promise(r=>setTimeout(r,300));
       const shot=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,name+'.png'),Buffer.from(shot.data,'base64'));
+    }
+    if(process.env.IWOMS_TEST_EXECUTION==='release'){
+      const dashboard=()=>evaluate(String.raw`[...document.querySelectorAll('h2, h3, button[aria-pressed]')].map(el=>el.textContent.trim().replace(/^\s*\d+\s*/, '')).filter(text=>/Daftar Pekerjaan|Aksi Prioritas|Total Work Order|Selesai Operasional/.test(text))`);
+      const layout=await dashboard();
+      assert.ok(layout.some(text=>text.includes('Daftar Pekerjaan')));
+      assert.equal(await evaluate('window.iwomsApp.workflow.dashboardRows().length'),0);
+      const toggle="document.querySelector('label:has(input[type=checkbox]) input').click()";
+      await run(toggle);
+      assert.equal(await evaluate('window.iwomsApp.workflow.referenceMode'),true);
+      assert.ok(await evaluate('window.iwomsApp.workflow.dashboardRows().length > 0'));
+      assert.deepEqual(await dashboard(),layout);
+      await click('Mode Kalender');
+      assert.ok(await evaluate('document.body.innerText.includes("2026-11-13")'));
+      await click('Tabel Data');
+      await run(toggle);
+      assert.equal(await evaluate('window.iwomsApp.workflow.dashboardRows().length'),0);
+      assert.deepEqual(await dashboard(),layout);
     }
     await click('Buat Pengajuan WO Baru');
     await field('nama_wo','WO uji I10-I13');await field('katalog_id','KAT-01');await field('lokasi','Tiang uji');await field('uraian','Kebutuhan uji UI');
@@ -285,7 +302,7 @@ async function browserChecks() {
           assert.ok(fs.readFileSync(csvPath,'utf8').includes(woId),'CSV hasil unduhan harus dapat dibuka.');
           fs.copyFileSync(csvPath,path.join(output,'uat-rekap.csv'));
           await role('preparator_pdkb');
-          await run("Array.from(document.querySelectorAll('button[aria-pressed]')).find(el=>el.textContent.includes('WO selesai operasional')).click()");
+          await run("Array.from(document.querySelectorAll('button[aria-pressed]')).find(el=>el.textContent.includes('WO Selesai Operasional')).click()");
           assert.ok(await evaluate('window.iwomsApp.workflow.dashboardRows().some(wo=>wo.status==="WO Completed")'));
           await screenshot('uat-i24-desktop');
           await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});

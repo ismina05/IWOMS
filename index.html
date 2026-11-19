@@ -408,7 +408,7 @@
       <!-- SISI KANAN: AREA KERJA UTAMA (MAIN CONTENT) -->
       <main class="flex-1 min-w-0 bg-slate-100/90 p-4 sm:p-6 lg:p-7 overflow-y-auto space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
-          <span>{{ workflow.referenceMode ? 'Referensi ? data contoh I01' : 'Demo kerja PDKB ? data tersimpan pada browser ini' }}</span>
+          <span>{{ workflow.referenceMode ? 'Referensi I01 ? Data contoh' : 'Demo kerja PDKB ? Data tersimpan di browser ini' }}</span>
           <div class="flex flex-wrap items-center gap-3">
             <label class="inline-flex items-center gap-2"><input type="checkbox" v-model="workflow.referenceMode">Lihat referensi I01</label>
             <button type="button" @click="workflow.reload" class="border border-slate-300 rounded-lg px-3 py-2 bg-white">Muat ulang data</button>
@@ -442,36 +442,7 @@
 
 
         <!-- ============================================================== -->
-        <section v-if="activeScreenCode==='D01' && !workflow.referenceMode" class="space-y-5" aria-label="Dashboard kerja">
-          <div class="rounded-xl border bg-white p-5">
-            <h2 class="font-semibold">Perlu aksi saya</h2>
-            <div v-for="task in filteredMyActions.filter(item=>item.actionable!==false)" :key="task.id" class="mt-2">
-              <button type="button" data-work-task class="text-left underline text-pln-blue" @click="executeAction(task)">{{ task.wo.id }} / {{ task.title }}</button>
-            </div>
-            <button v-for="report in workflow.monthlyReports.filter(item=>workflow.monthlyOwner(item)===activeRoleKey && item.nodeId!=='Node_end_bulanan')" :key="report.id" type="button" class="block mt-2 underline text-pln-blue" @click="workflow.openMonthly(report)">{{ report.period }} / {{ workflow.monthlyTitle(report) }}</button>
-            <p v-if="!workflow.tasks.some(item=>item.actionable) && !workflow.monthlyReports.some(item=>workflow.monthlyOwner(item)===activeRoleKey && item.nodeId!=='Node_end_bulanan')" class="mt-2 text-sm text-slate-600">Belum ada tugas aktif.</p>
-          </div>
-          <div class="rounded-xl border bg-white p-5 space-y-4">
-            <div class="grid gap-3 sm:grid-cols-3" @input="workflow.dashboardPage=1" @change="workflow.dashboardPage=1">
-              <label class="text-sm">Cari WO<input v-model="workflow.dashboardFilter.search" type="search" class="block w-full border rounded-lg p-2"></label>
-              <label class="text-sm">Periode WIB<input v-model="workflow.dashboardFilter.period" type="month" class="block w-full border rounded-lg p-2"></label>
-              <label class="text-sm">Status<select v-model="workflow.dashboardFilter.status" class="block w-full border rounded-lg p-2"><option value="">Semua status</option><option v-for="status in workflow.dashboardStatuses" :key="status">{{status}}</option></select></label>
-            </div>
-            <p class="text-xs text-slate-600">Periode memakai waktu pengajuan untuk daftar kerja, dan waktu selesai operasional untuk kelompok selesai operasional.</p>
-            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <button v-for="[key,label] in [['all','WO dalam cakupan'],['tasks','WO perlu aksi'],['hold','WO terkendala'],['operational','WO selesai operasional']]" :key="key" type="button" :aria-pressed="workflow.dashboardFilter.category===key" @click="workflow.dashboardFilter.category=key;workflow.dashboardPage=1" class="border rounded-lg p-3 text-left aria-pressed:border-pln-blue">
-                <strong class="block text-xl">{{ workflow.dashboardCount(key) }}</strong><span class="text-sm">{{ label }}</span>
-              </button>
-            </div>
-            <div class="overflow-x-auto"><table class="w-full text-left text-sm"><caption class="text-left py-2">{{workflow.dashboardRows().length}} WO sesuai filter</caption><thead class="bg-slate-50"><tr><th class="p-2">WO</th><th class="p-2">Status</th><th class="p-2">Selesai operasional (WIB)</th></tr></thead><tbody>
-              <tr v-for="wo in workflow.dashboardRows().slice((workflow.dashboardPage-1)*10,workflow.dashboardPage*10)" :key="wo.id" class="border-b"><td class="p-2"><button class="underline text-pln-blue text-left" @click="workflow.open(wo)">{{wo.id}} / {{wo.nama_wo}}</button></td><td class="p-2">{{wo.status}}</td><td class="p-2">{{wo.operational_completed_at ? workflow.formatTime(wo.operational_completed_at) : 'Menunggu'}}</td></tr>
-            </tbody></table></div>
-            <div class="flex items-center gap-3 text-sm"><button type="button" class="border rounded px-2 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage<=1" @click="workflow.dashboardPage--">Sebelumnya</button><span>Halaman {{workflow.dashboardPage}}</span><button type="button" class="border rounded px-2 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage*10>=workflow.dashboardRows().length" @click="workflow.dashboardPage++">Berikutnya</button></div>
-          </div>
-        </section>
-        <!-- SCREEN D01: DASHBOARD                                         -->
-        <!-- ============================================================== -->
-        <div v-if="activeScreenCode === 'D01' && workflow.referenceMode" class="space-y-5">
+        <div v-if="activeScreenCode === 'D01'" class="space-y-5">
 
           <!-- Breadcrumb & Waktu Sistem -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
@@ -488,44 +459,44 @@
           <!-- KARTU STATISTIK BESAR (4 BIG KPI CARDS - WARNA KHAS PLN) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <!-- Card 1: Total WO (Biru PLN) -->
-            <div class="bg-sky-900 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
+            <button type="button" :aria-pressed="workflow.dashboardFilter.category === 'all'" @click="workflow.dashboardFilter.category = 'all'; workflow.dashboardPage = 1" class="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-900 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
               <div>
-                <div class="text-3xl font-black leading-none">{{ workOrders.length }}</div>
+                <div class="text-3xl font-black leading-none">{{ dashboardCount('all') }}</div>
                 <div class="text-xs font-bold font-semibold mt-1 text-sky-100">Total Work Order</div>
-                <div class="text-[11px] text-sky-200 mt-0.5">Seluruh Siklus Dokumen v1.2</div>
+                <div class="text-[11px] text-sky-200 mt-0.5">Work order sesuai filter</div>
               </div>
               <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
-            </div>
+            </button>
 
             <!-- Card 2: PDKB Hotline (Kuning Emas Kilat PLN) -->
-            <div class="bg-amber-500 text-slate-900 rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
+            <button type="button" :aria-pressed="workflow.dashboardFilter.category === 'hotline'" @click="workflow.dashboardFilter.category = 'hotline'; workflow.dashboardPage = 1" class="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-amber-500 text-slate-900 rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
               <div>
-                <div class="text-3xl font-black leading-none">{{ workOrders.filter(w => w.kondisi_operasi === 'Tanpa Padam').length }}</div>
+                <div class="text-3xl font-black leading-none">{{ dashboardCount('hotline') }}</div>
                 <div class="text-xs font-black font-semibold mt-1 text-slate-900">PDKB Bertegangan</div>
                 <div class="text-[11px] text-amber-950 font-medium mt-0.5">Hotline 20 kV (Tanpa Padam)</div>
               </div>
               <div class="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-amber-950" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg></div>
-            </div>
+            </button>
 
             <!-- Card 3: Padam 20 kV (Merah Safety) -->
-            <div class="bg-red-600 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
+            <button type="button" :aria-pressed="workflow.dashboardFilter.category === 'padam'" @click="workflow.dashboardFilter.category = 'padam'; workflow.dashboardPage = 1" class="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-red-600 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
               <div>
-                <div class="text-3xl font-black leading-none">{{ workOrders.filter(w => w.kondisi_operasi === 'Padam').length }}</div>
+                <div class="text-3xl font-black leading-none">{{ dashboardCount('padam') }}</div>
                 <div class="text-xs font-bold font-semibold mt-1 text-red-100">Padam 20 kV</div>
                 <div class="text-[11px] text-red-200 mt-0.5">Pemadaman Terencana</div>
               </div>
               <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
-            </div>
+            </button>
 
             <!-- Card 4: Siap Tutup / Review (Hijau Sukses) -->
-            <div class="bg-emerald-600 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
+            <button type="button" :aria-pressed="workflow.dashboardFilter.category === 'operational'" @click="workflow.dashboardFilter.category = 'operational'; workflow.dashboardPage = 1" class="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-emerald-600 text-white rounded-2xl p-4 shadow-sm flex items-center justify-between hover:shadow-md transition">
               <div>
-                <div class="text-3xl font-black leading-none">{{ workOrders.filter(w => w.status === 'Under Review' || w.status === 'Completed' || w.status === 'Closed').length }}</div>
-                <div class="text-xs font-bold font-semibold mt-1 text-emerald-100">Siap Tutup / Review</div>
-                <div class="text-[11px] text-emerald-200 mt-0.5">Fisik Lapangan Selesai</div>
+                <div class="text-3xl font-black leading-none">{{ dashboardCount('operational') }}</div>
+                <div class="text-xs font-bold font-semibold mt-1 text-emerald-100">WO Selesai Operasional</div>
+                <div class="text-[11px] text-emerald-200 mt-0.5">Penormalan SOK terkonfirmasi</div>
               </div>
               <div class="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-            </div>
+            </button>
           </div>
 
           <!-- 2-COLUMN MAIN WORKSPACE: SISI TENGAH (TABEL LEGA) + SISI KANAN (PANEL AKSI CARA 1) -->
@@ -574,11 +545,17 @@
                   </div>
                 </div>
 
+                <div class="grid gap-3 sm:grid-cols-3 text-xs" @input="workflow.dashboardPage = 1" @change="workflow.dashboardPage = 1">
+                  <label>Cari WO<input v-model="workflow.dashboardFilter.search" type="search" class="block w-full mt-1 border border-slate-300 rounded-lg p-2"></label>
+                  <label>Periode WIB<input v-model="workflow.dashboardFilter.period" type="month" class="block w-full mt-1 border border-slate-300 rounded-lg p-2"></label>
+                  <label>Status<select v-model="workflow.dashboardFilter.status" class="block w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="">Semua status</option><option v-for="status in workflow.dashboardStatuses" :key="status">{{ status }}</option></select></label>
+                </div>
+
                 <!-- Quick Filters Bar -->
                 <div class="flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50/80 p-3 rounded-xl border border-slate-200/70">
                   <div class="flex items-center space-x-2">
                     <span class="text-slate-600 font-bold text-xs">Penugasan:</span>
-                    <select v-model="filterPenugasan" class="border border-slate-300 rounded-lg px-2.5 py-1 bg-white font-medium text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none">
+                    <select v-model="filterPenugasan" @change="workflow.dashboardPage = 1" class="border border-slate-300 rounded-lg px-2.5 py-1 bg-white font-medium text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none">
                       <option value="ALL">Semua Penugasan</option>
                       <option value="Internal PLN">Internal PLN (PDKB)</option>
                       <option value="Mitra Kerja">Mitra Kerja (Vendor)</option>
@@ -587,7 +564,7 @@
 
                   <div class="flex items-center space-x-2">
                     <span class="text-slate-600 font-bold text-xs">Kondisi Operasi:</span>
-                    <select v-model="filterOperasi" class="border border-slate-300 rounded-lg px-2.5 py-1 bg-white font-medium text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none">
+                    <select v-model="filterOperasi" @change="workflow.dashboardPage = 1" class="border border-slate-300 rounded-lg px-2.5 py-1 bg-white font-medium text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none">
                       <option value="ALL">Semua Kondisi</option>
                       <option value="Tanpa Padam">Tanpa Padam (PDKB Hotline)</option>
                       <option value="Padam">Padam 20 kV (Terencana)</option>
@@ -767,7 +744,7 @@
                           Tetapkan Jadwal
                         </button>
                         <button 
-                          v-if="wo.status === 'Ready to Start' && (['kepala_regu', 'pelaksana_pdkb', 'superadmin'].includes(activeRoleKey))"
+                          v-if="workflow.referenceMode && (wo.status === 'Ready to Start' && (['kepala_regu', 'pelaksana_pdkb', 'superadmin'].includes(activeRoleKey)))"
                           @click="mulaiPekerjaanLapangan(wo)" 
                           class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-[10px] shadow-xs flex items-center space-x-1"
                         >
@@ -855,7 +832,7 @@
                       </button>
                       <div class="flex space-x-1">
                         <button 
-                          v-if="wo.status === 'Ongoing'"
+                          v-if="workflow.referenceMode && (wo.status === 'Ongoing')"
                           @click="selesaikanPekerjaanLapangan(wo)" 
                           class="px-2 py-1 bg-pln-blue hover:bg-pln-blue-light text-white rounded font-bold text-[10px] shadow-xs"
                         >
@@ -1024,21 +1001,21 @@
                     :class="calendarSubView === 'month' ? 'bg-pln-blue text-white font-bold' : 'text-slate-600 hover:bg-slate-100'"
                     class="px-3 py-1 rounded text-xs transition"
                   >
-                    Bulan (November 2026)
+                    Bulan
                   </button>
                   <button 
                     @click="calendarSubView = 'week'"
                     :class="calendarSubView === 'week' ? 'bg-pln-blue text-white font-bold' : 'text-slate-600 hover:bg-slate-100'"
                     class="px-3 py-1 rounded text-xs transition"
                   >
-                    Minggu Ini (10 - 16 Nov)
+                    Minggu
                   </button>
                   <button 
                     @click="calendarSubView = 'day'"
                     :class="calendarSubView === 'day' ? 'bg-pln-blue text-white font-bold' : 'text-slate-600 hover:bg-slate-100'"
                     class="px-3 py-1 rounded text-xs transition"
                   >
-                    Hari Ini (13 Nov &middot; 3 Shift)
+                    Hari
                   </button>
                 </div>
               </div>
@@ -1060,195 +1037,19 @@
               </div>
             </div>
 
-            <!-- SUB-VIEW 1: BULAN (MONTH GRID) -->
-            <div v-if="calendarSubView === 'month'" class="border border-slate-200 rounded-xl overflow-hidden bg-white">
-              <div class="grid grid-cols-7 gap-px bg-slate-200 text-center text-xs font-black text-slate-700">
-                <div class="bg-slate-100 py-2.5 text-red-600">MIN</div>
-                <div class="bg-slate-100 py-2.5">SEN</div>
-                <div class="bg-slate-100 py-2.5">SEL</div>
-                <div class="bg-slate-100 py-2.5">RAB</div>
-                <div class="bg-slate-100 py-2.5">KAM</div>
-                <div class="bg-slate-100 py-2.5">JUM</div>
-                <div class="bg-slate-100 py-2.5 text-amber-700">SAB</div>
-              </div>
-
-              <div class="grid grid-cols-7 gap-px bg-slate-200 text-xs">
-                <!-- 30 Calendar Cells for November 2026 (Starts on Sunday / MIN) -->
-                <div 
-                  v-for="d in 30" 
-                  :key="d" 
-                  class="bg-white p-2 min-h-[105px] flex flex-col justify-between hover:bg-slate-50 transition"
-                  :class="{'ring-2 ring-amber-400 bg-amber-50/20': d === 13}"
-                >
-                  <div class="flex items-center" :class="d === 13 ? 'justify-between mb-1' : 'justify-end mb-1'">
-                    <span 
-                      class="font-bold text-xs"
-                      :class="d === 13 ? 'bg-amber-400 text-slate-900 font-black px-1.5 py-0.5 rounded' : 'text-slate-400'"
-                    >
-                      {{ d }}
-                    </span>
-                    <span v-if="d === 13" class="text-[9px] font-bold text-amber-900 px-1 bg-amber-200 rounded">HARI INI</span>
-                  </div>
-
-                  <!-- Scheduled Events on Cells -->
-                  <div class="space-y-1 overflow-hidden">
-                    <!-- Day 15 (MIN - WO-015 Assignment Review Matching Screenshot) -->
-                    <div 
-                      v-if="d === 15" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-015'))" 
-                      class="bg-amber-500 hover:bg-amber-600 text-white p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                      title="Klik untuk membuka Detail WO"
-                    >
-                      WO-015 &bull; Assignment Review
-                    </div>
-
-                    <!-- Day 16 (SEN - WO-011 Under Review Matching Screenshot) -->
-                    <div 
-                      v-if="d === 16" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-011'))" 
-                      class="bg-emerald-600 hover:bg-emerald-700 text-white p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                      title="Klik untuk membuka Detail WO"
-                    >
-                      WO-011 &bull; Under Review
-                    </div>
-
-                    <!-- Day 22 (MIN - WO-012 Under Review Matching Screenshot) -->
-                    <div 
-                      v-if="d === 22" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-012'))" 
-                      class="bg-rose-600 hover:bg-rose-700 text-white p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                      title="Klik untuk membuka Detail WO"
-                    >
-                      WO-012 &bull; Under Review
-                    </div>
-
-                    <!-- Day 13 (Today - PDKB Event) -->
-                    <div 
-                      v-if="d === 13" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-2026-11-001'))" 
-                      class="bg-amber-100 hover:bg-amber-200 border border-amber-400 text-amber-950 p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                      title="Klik untuk membuka Detail WO"
-                    >
-                      08:30 PDKB Bantul 04
-                    </div>
-
-                    <!-- Day 14 (Padam Kubikel) -->
-                    <div 
-                      v-if="d === 14" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-2026-11-002'))" 
-                      class="bg-red-100 hover:bg-red-200 border border-red-400 text-red-950 p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                    >
-                      09:00 Padam GH Bantul
-                    </div>
-
-                    <!-- Day 18 (PDKB Kentungan) -->
-                    <div 
-                      v-if="d === 18" 
-                      @click="openDetailWO(workOrders.find(w => w.id === 'WO-005'))" 
-                      class="bg-blue-100 hover:bg-blue-200 border border-blue-400 text-blue-900 p-1.5 rounded-lg text-[10px] font-bold cursor-pointer shadow-xs truncate"
-                    >
-                      WO-005 &bull; Scheduled (PDKB)
-                    </div>
-                  </div>
-
-                  <div class="text-[9px] text-slate-400 text-right mt-1">
-                    {{ (d === 13 || d === 14 || d === 15 || d === 16 || d === 22 || d === 18) ? 'Jadwal Aktif' : '' }}
-                  </div>
+            <div class="border border-slate-200 rounded-xl overflow-x-auto bg-white">
+              <div :class="calendarSubView === 'day' ? '' : 'min-w-[560px] grid grid-cols-7'" class="gap-px bg-slate-200 text-xs">
+                <template v-if="calendarSubView !== 'day'">
+                  <div v-for="label in ['MIN','SEN','SEL','RAB','KAM','JUM','SAB']" :key="label" class="bg-slate-100 py-2.5 text-center font-black text-slate-700">{{ label }}</div>
+                </template>
+                <div v-for="(cell, index) in dashboardCalendar" :key="index" class="bg-white p-2 min-h-[105px] space-y-1">
+                  <template v-if="cell">
+                    <p class="text-right font-bold text-slate-600">{{ cell.date }}</p>
+                    <button v-for="wo in cell.orders" :key="wo.id" type="button" @click="openDetailWO(wo)" class="block w-full text-left px-2 py-1 rounded break-words" :class="wo.kondisi_operasi === 'Padam' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-900'">{{ wo.jadwal_resmi_jam }} {{ wo.nama_wo }}</button>
+                  </template>
                 </div>
               </div>
             </div>
-
-            <!-- SUB-VIEW 2: MINGGU (WEEK TIMELINE) -->
-            <div v-if="calendarSubView === 'week'" class="border border-slate-200 rounded-xl overflow-hidden bg-white p-4">
-              <h4 class="font-bold text-xs text-slate-800 mb-3">Jadwal Mingguan: 10 Nov - 16 Nov 2026 (Jam Kerja 07.30 - 16.30 WIB)</h4>
-              <div class="space-y-3">
-                <div class="p-3 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg flex items-center justify-between">
-                  <div>
-                    <span class="font-mono text-xs font-bold text-pln-blue">WO-2026-11-001 &middot; Kamis 13 Nov, 08:30 - 13:00 WIB</span>
-                    <div class="font-bold text-xs text-slate-900">Perbaikan Jamper & Penggantian Isolator JTM Fdr. Bantul 04</div>
-                    <div class="text-[11px] text-slate-600">Metode: PDKB Bertegangan 20 kV &middot; Regu: Regu PDKB UID (6 Personel)</div>
-                  </div>
-                  <button @click="openDetailWO(workOrders.find(w => w.id === 'WO-2026-11-001'))" class="px-3 py-1 bg-pln-blue text-white rounded text-xs font-bold">
-                    Detail WO
-                  </button>
-                </div>
-
-                <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-center justify-between">
-                  <div>
-                    <span class="font-mono text-xs font-bold text-pln-blue">WO-2026-11-002 &middot; Jumat 14 Nov, 09:00 - 15:00 WIB</span>
-                    <div class="font-bold text-xs text-slate-900">Pemeliharaan Kubikel Incoming & PMT 20kV GH Bantul</div>
-                    <div class="text-[11px] text-slate-600">Metode: Padam 20 kV (18 Gardu) &middot; Pelaksana: PT Haleyora Power</div>
-                  </div>
-                  <button @click="openDetailWO(workOrders.find(w => w.id === 'WO-2026-11-002'))" class="px-3 py-1 bg-pln-blue text-white rounded text-xs font-bold">
-                    Detail WO
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- SUB-VIEW 3: HARI & 3 SHIFT (DAY VIEW) -->
-            <div v-if="calendarSubView === 'day'" class="border border-slate-200 rounded-xl overflow-hidden bg-white p-4">
-              <div class="flex items-center justify-between mb-4">
-                <div>
-                  <h4 class="font-bold text-sm text-slate-900">Rotasi Shift & Kesiapan Regu &middot; Kamis, 13 November 2026</h4>
-                  <p class="text-xs text-slate-500">Pemantauan 3 Shift Operasional Sesuai Dokumen K11</p>
-                </div>
-                <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold text-xs">Semua Regu Siap (Fit)</span>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Shift 1 Pagi -->
-                <div class="p-4 rounded-xl border-2 border-emerald-400 bg-emerald-50/20">
-                  <div class="flex items-center justify-between font-bold text-xs mb-2">
-                    <span class="text-emerald-900">SHIFT 1 (07:00 - 15:00 WIB)</span>
-                    <span class="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px]">Aktif Bertugas</span>
-                  </div>
-                  <div class="space-y-2 text-xs">
-                    <div class="p-2 bg-white rounded border">
-                      <div class="font-bold text-slate-800">Regu PDKB Bertegangan 1</div>
-                      <div class="text-[11px] text-slate-500">6 Personel &middot; Pengawas: Sugeng Riyadi</div>
-                      <div class="text-[10px] text-emerald-700 font-bold mt-1">✓ Briefing K3 & Tensi Normal</div>
-                    </div>
-                    <div class="p-2 bg-white rounded border">
-                      <div class="font-bold text-slate-800">Regu Yantek 1 Posko Bantul</div>
-                      <div class="text-[11px] text-slate-500">4 Personel &middot; Pengawas: Danang S.</div>
-                      <div class="text-[10px] text-emerald-700 font-bold mt-1">✓ Siaga Gangguan Jaringan</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Shift 2 Siang/Sore -->
-                <div class="p-4 rounded-xl border border-slate-300 bg-slate-50">
-                  <div class="flex items-center justify-between font-bold text-xs mb-2">
-                    <span class="text-slate-800">SHIFT 2 (15:00 - 23:00 WIB)</span>
-                    <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px]">Jadwal Berikutnya</span>
-                  </div>
-                  <div class="space-y-2 text-xs">
-                    <div class="p-2 bg-white rounded border">
-                      <div class="font-bold text-slate-800">Regu Yantek 2 Posko Bantul</div>
-                      <div class="text-[11px] text-slate-500">4 Personel &middot; Roster Terkonfirmasi</div>
-                      <div class="text-[10px] text-slate-500 mt-1">Pemeriksaan kesehatan pukul 14:30 WIB</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Shift 3 Malam -->
-                <div class="p-4 rounded-xl border border-slate-300 bg-slate-50">
-                  <div class="flex items-center justify-between font-bold text-xs mb-2">
-                    <span class="text-slate-800">SHIFT 3 (23:00 - 07:00 WIB)</span>
-                    <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px]">Standby Malam</span>
-                  </div>
-                  <div class="space-y-2 text-xs">
-                    <div class="p-2 bg-white rounded border">
-                      <div class="font-bold text-slate-800">Regu Yantek 3 Malam</div>
-                      <div class="text-[11px] text-slate-500">4 Personel Siaga Emergency</div>
-                      <div class="text-[10px] text-slate-500 mt-1">Serah terima shift pukul 22:45 WIB</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
 
           <!-- ============================================================== -->
@@ -1268,7 +1069,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-200">
-                <tr v-for="wo in displayedWorkOrders" :key="wo.id" class="hover:bg-slate-50 transition">
+                <tr v-for="wo in displayedWorkOrders.slice((workflow.dashboardPage - 1) * 10, workflow.dashboardPage * 10)" :key="wo.id" class="hover:bg-slate-50 transition">
                   <td class="py-2.5 px-2 font-mono font-bold text-pln-blue whitespace-nowrap text-xs">
                     {{ wo.id }}
                     <div class="text-[10px] font-normal text-slate-400">v{{ wo.katalog_versi }}</div>
@@ -1330,8 +1131,14 @@
                     </div>
                   </td>
                 </tr>
+                <tr v-if="!displayedWorkOrders.length"><td colspan="7" class="px-3 py-8 text-center text-slate-500">Belum ada WO sesuai filter.</td></tr>
               </tbody>
             </table>
+            <div class="flex flex-wrap items-center gap-3 mt-3 text-xs">
+              <button type="button" class="border rounded-lg px-3 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage <= 1" @click="workflow.dashboardPage--">Sebelumnya</button>
+              <span>Halaman {{ workflow.dashboardPage }}</span>
+              <button type="button" class="border rounded-lg px-3 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage * 10 >= displayedWorkOrders.length" @click="workflow.dashboardPage++">Berikutnya</button>
+            </div>
           </div>
 
         </div>
@@ -1347,7 +1154,7 @@
             <h3 class="font-extrabold text-base text-slate-900 tracking-tight">Aksi Prioritas {{ activeRoleInfo.title }}</h3>
           </div>
           <span class="w-6 h-6 rounded-full bg-red-500 text-white font-black text-xs flex items-center justify-center shadow-xs">
-            {{ filteredMyActions.length }}
+            {{ dashboardActions.length + workflow.monthlyTasks.length }}
           </span>
         </div>
 
@@ -1358,11 +1165,13 @@
           <div class="text-[11px] text-slate-500">Tugas prioritas memerlukan putusan atau tinjauan Anda segera.</div>
         </div>
 
-        <p v-if="!filteredMyActions.length" class="text-xs text-slate-500 py-3">Tidak ada tugas aktif untuk role ini.</p>
+        <p v-if="!dashboardActions.length && !workflow.monthlyTasks.length" class="text-xs text-slate-500 py-3">Tidak ada tugas aktif untuk role ini.</p>
+        <button v-for="report in workflow.monthlyTasks" :key="report.id" type="button" class="block w-full text-left border border-slate-200 rounded-xl p-4 text-sm font-bold hover:border-pln-blue" @click="workflow.openMonthly(report)">{{ report.period }} / {{ workflow.monthlyTitle(report) }}</button>
         <!-- Action Tiles List (High-Contrast Buttons ala Reference 1) -->
         <div class="space-y-3 max-h-[680px] overflow-y-auto pr-1">
           <div 
-            v-for="act in filteredMyActions" 
+            v-for="act in dashboardActions"
+            data-work-task
             :key="act.id" 
             @click="executeAction(act)"
             role="button" tabindex="0" @keydown.enter="executeAction(act)" @keydown.space.prevent="executeAction(act)"
@@ -7238,18 +7047,44 @@ function bukaPratinjauDokumen(doc) {
 
         // Dynamic Actions Queue based on Active Role (NAV-01)
         // Filtered Work Orders for Table, Kanban & Calendar
-        const displayedWorkOrders = computed(() => {
-          return workOrders.value.filter(w => {
+        function dashboardRows(category) {
+          return workflowBridge.workflow.dashboardRows(category).filter(w => {
             const matchPenugasan = filterPenugasan.value === 'ALL' || w.penugasan === filterPenugasan.value;
             const matchOperasi = filterOperasi.value === 'ALL' || w.kondisi_operasi === filterOperasi.value;
             return matchPenugasan && matchOperasi;
           });
+        }
+        const displayedWorkOrders = computed(() => dashboardRows());
+        const dashboardCalendar = computed(() => {
+          const today = IwomsReporting.day(new Date().toISOString());
+          const workflow = workflowBridge.workflow;
+          const anchor = workflow.dashboardFilter.period
+            ? workflow.dashboardFilter.period + '-01'
+            : workflow.referenceMode ? '2026-11-13' : today;
+          const selected = new Date(anchor + 'T00:00:00Z');
+          const first = new Date(selected);
+          let days = 1;
+          let padding = 0;
+          if (calendarSubView.value === 'month') {
+            first.setUTCDate(1);
+            padding = first.getUTCDay();
+            days = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+          } else if (calendarSubView.value === 'week') {
+            days = 7;
+            first.setUTCDate(first.getUTCDate() - first.getUTCDay());
+          }
+          return [...Array(padding).fill(null), ...Array.from({length: days}, (_, offset) => {
+            const date = new Date(first);
+            date.setUTCDate(first.getUTCDate() + offset);
+            const key = date.toISOString().slice(0, 10);
+            return {date: key, orders: displayedWorkOrders.value.filter(wo => wo.jadwal_resmi_tanggal === key)};
+          })];
         });
 
         function getKanbanWOs(statuses) {
           const buckets = { 'JSA Preparation':'Approved', 'Survey':'Approved', 'Feasibility Review':'Approved', 'Planning':'Approved',
             'Document Preparation':'Approved', 'Field Readiness':'Approved', 'SOK Coordination':'Approved', 'Initial Condition Review':'Approved',
-            'Hold Review':'Approved', 'Proposal Stopped':'Canceled', 'Survey Stopped':'Canceled' };
+            'Hold Review':'Approved', 'Proposal Stopped':'Canceled', 'Survey Stopped':'Canceled', 'WO Completed':'Closed' };
           return displayedWorkOrders.value.filter(w => statuses.includes(w.status) || statuses.includes(w.stage === 'notify' ? 'Approved' : buckets[w.status]));
         }
 
@@ -7312,6 +7147,7 @@ function bukaPratinjauDokumen(doc) {
         }
 
         function openDetailWO(wo) {
+          if (!workflowBridge.workflow.referenceMode) return workflowBridge.workflow.open(wo);
           selectedWO.value = wo;
           activeDetailTab.value = 'ringkasan';
           showDetailModal.value = true;
@@ -7920,6 +7756,9 @@ function bukaPratinjauDokumen(doc) {
           activeMenu,
           activeScreenCode,
           dashboardMode,
+          dashboardCalendar,
+          dashboardCount: category => dashboardRows(category).length,
+          dashboardActions: computed(() => workflowBridge.filteredMyActions.value.filter(action => !workflowBridge.workflow.referenceMode && action.actionable !== false)),
           calendarSubView,
           filterOperasi,
           showActionPanel,

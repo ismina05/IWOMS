@@ -13,6 +13,8 @@
       if(needle&&![wo.id,wo.nama_wo,wo.lokasi].some(value=>String(value||'').toLowerCase().includes(needle)))return false;
       if(category==='tasks'&&!assigned.has(wo.id))return false;
       if(category==='hold'&&!['On Hold','Hold Review','Work Stopped'].includes(wo.status))return false;
+      if(category==='hotline'&&wo.kondisi_operasi!=='Tanpa Padam')return false;
+      if(category==='padam'&&wo.kondisi_operasi!=='Padam')return false;
       if(category==='operational'&&!day(wo.operational_completed_at))return false;
       const event=category==='operational'?wo.operational_completed_at:wo.createdAt;
       return !period||day(event).startsWith(period);
