@@ -3471,7 +3471,7 @@
 
             <!-- Unduh Buku 9 SOP Lengkap (4.6 MB) -->
             <a 
-              href="/assets/pdkb_dokumen_resmi.pdf" 
+              href="assets/pdkb_dokumen_resmi.pdf" 
               download="Dokumen_Resmi_PDKB_9_SOP_UID_Yogyakarta.pdf"
               target="_blank"
               class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer border border-slate-700"
@@ -3482,7 +3482,7 @@
 
             <!-- Unduh Template Excel SP2B/SP3B & HIRARC -->
             <a 
-              href="/assets/SP2B_-_SP3B.xlsm" 
+              href="assets/SP2B_-_SP3B.xlsm" 
               download="SP2B_-_SP3B_UID_Yogyakarta.xlsm"
               target="_blank"
               class="px-3 py-1.5 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 hover:text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer border border-emerald-800"
@@ -3740,7 +3740,7 @@
                 <div class="flex items-center justify-between px-3 sm:px-6 py-2 border-b-2 border-black">
                   <!-- Logo PLN Resmi Asli (Extracted directly from official PDF) -->
                   <div class="w-16 sm:w-20 h-16 flex items-center justify-center shrink-0">
-                    <img src="/assets/logo_pln_resmi.jpg" alt="Logo PLN" class="h-14 sm:h-16 w-auto object-contain" />
+                    <img src="assets/logo_pln_resmi.jpg" alt="Logo PLN" class="h-14 sm:h-16 w-auto object-contain" />
                   </div>
 
                   <!-- Teks Header Unit Resmi PLN (Font Serif Tebal Hitam Persis PDF) -->
@@ -3755,7 +3755,7 @@
 
                   <!-- Logo PDKB Hotline Resmi Asli (Extracted directly from official PDF) -->
                   <div class="w-16 sm:w-20 h-16 flex items-center justify-center shrink-0">
-                    <img src="/assets/logo_pdkb_resmi.jpg" alt="Logo PDKB" class="h-14 sm:h-16 w-auto object-contain" />
+                    <img src="assets/logo_pdkb_resmi.jpg" alt="Logo PDKB" class="h-14 sm:h-16 w-auto object-contain" />
                   </div>
                 </div>
 
@@ -5317,7 +5317,7 @@
         const previewingDoc = ref(null);
         const activePdfViewerPage = ref(1);
         const activePreviewTab = ref('pdf_khusus');
-        const currentActivePdfUrl = ref('/assets/DOC-04_SOP_04_1_SP2B.pdf');
+        const currentActivePdfUrl = ref('assets/DOC-04_SOP_04_1_SP2B.pdf');
         const selectedWO = ref(null);
         const activeWIPWOId = ref('WO-2026-11-001');
 
@@ -6797,18 +6797,18 @@ function bukaPratinjauDokumen(doc) {
           previewingDoc.value = doc;
 
           const pdfUrlMap = {
-            'DOC-01': '/assets/DOC-01_Cover_PDKB.pdf',
-            'DOC-02': '/assets/DOC-02_SOP_01_Survey_Lokasi.pdf',
-            'DOC-03': '/assets/DOC-02_SOP_01_Survey_Lokasi.pdf',
-            'DOC-04': '/assets/DOC-04_SOP_04_1_SP2B.pdf',
-            'DOC-05': '/assets/DOC-05_SOP_04_2_Susunan_Tim.pdf',
-            'DOC-06': '/assets/DOC-06_SOP_05_SP3B.pdf',
-            'DOC-07': '/assets/DOC-07_SOP_06_Tailgate_Session.pdf',
-            'DOC-08': '/assets/DOC-08_JSA_K3_PDKB.pdf',
-            'DOC-09': '/assets/DOC-09_Checklist_K3_PDKB.pdf'
+            'DOC-01': 'assets/DOC-01_Cover_PDKB.pdf',
+            'DOC-02': 'assets/DOC-02_SOP_01_Survey_Lokasi.pdf',
+            'DOC-03': 'assets/DOC-02_SOP_01_Survey_Lokasi.pdf',
+            'DOC-04': 'assets/DOC-04_SOP_04_1_SP2B.pdf',
+            'DOC-05': 'assets/DOC-05_SOP_04_2_Susunan_Tim.pdf',
+            'DOC-06': 'assets/DOC-06_SOP_05_SP3B.pdf',
+            'DOC-07': 'assets/DOC-07_SOP_06_Tailgate_Session.pdf',
+            'DOC-08': 'assets/DOC-08_JSA_K3_PDKB.pdf',
+            'DOC-09': 'assets/DOC-09_Checklist_K3_PDKB.pdf'
           };
 
-          currentActivePdfUrl.value = pdfUrlMap[doc.kode] || '/assets/DOC-04_SOP_04_1_SP2B.pdf';
+          currentActivePdfUrl.value = pdfUrlMap[doc.kode] || 'assets/DOC-04_SOP_04_1_SP2B.pdf';
 
           if (doc.is_user_uploaded && doc.preview_url) {
             activePreviewTab.value = 'dokumen_asli';
@@ -6822,16 +6822,16 @@ function bukaPratinjauDokumen(doc) {
         function setPdfViewerPage(page) {
           activePdfViewerPage.value = page;
           const pageMap = {
-            1: { url: '/assets/DOC-01_Cover_PDKB.pdf', kode: 'DOC-01', nama: 'Cover & Nota Dinas Usulan Pekerjaan PDKB' },
-            2: { url: '/assets/DOC-02_SOP_01_Survey_Lokasi.pdf', kode: 'DOC-02', nama: 'SOP PDKB-TM NO. 01: Formulir Hasil Survey Lokasi Pekerjaan' },
-            3: { url: '/assets/DOC-04_SOP_04_1_SP2B.pdf', kode: 'DOC-04', nama: 'SOP PDKB-TM NO. 04.1: Surat Perintah Melaksanakan Pekerjaan Bertegangan (SP2B)' },
-            4: { url: '/assets/DOC-05_SOP_04_2_Susunan_Tim.pdf', kode: 'DOC-05', nama: 'SOP PDKB-TM NO. 04.2: SP2B Lampiran Susunan Tim & No Sertifikat Hotline' },
-            5: { url: '/assets/DOC-06_SOP_05_SP3B.pdf', kode: 'DOC-06', nama: 'SOP PDKB-TM NO. 05: Surat Perintah Pengawasan Bertegangan (SP3B)' },
-            6: { url: '/assets/DOC-07_SOP_06_Tailgate_Session.pdf', kode: 'DOC-07', nama: 'SOP PDKB-TM NO. 06: Tailgate Session & Analisa Pembagian Tugas Hotline' },
-            7: { url: '/assets/DOC-08_JSA_K3_PDKB.pdf', kode: 'DOC-08', nama: 'Job Safety Analysis (JSA) & HIRARC Keselamatan Kerja PDKB TM' },
-            8: { url: '/assets/DOC-08_JSA_K3_PDKB.pdf', kode: 'DOC-08', nama: 'Job Safety Analysis (JSA) Lanjutan & Pengendalian Bahaya Induksi' },
-            9: { url: '/assets/DOC-09_Checklist_K3_PDKB.pdf', kode: 'DOC-09', nama: 'Check List Pengawasan K3 Pekerjaan PDKB TM (16+7+5 Butir Verifikasi)' },
-            10: { url: '/assets/DOC-02_SOP_01_Survey_Lokasi.pdf', kode: 'DOC-03', nama: 'Single Line Diagram (SLD) 20kV & Foto Kondisi Eksisting Aset' }
+            1: { url: 'assets/DOC-01_Cover_PDKB.pdf', kode: 'DOC-01', nama: 'Cover & Nota Dinas Usulan Pekerjaan PDKB' },
+            2: { url: 'assets/DOC-02_SOP_01_Survey_Lokasi.pdf', kode: 'DOC-02', nama: 'SOP PDKB-TM NO. 01: Formulir Hasil Survey Lokasi Pekerjaan' },
+            3: { url: 'assets/DOC-04_SOP_04_1_SP2B.pdf', kode: 'DOC-04', nama: 'SOP PDKB-TM NO. 04.1: Surat Perintah Melaksanakan Pekerjaan Bertegangan (SP2B)' },
+            4: { url: 'assets/DOC-05_SOP_04_2_Susunan_Tim.pdf', kode: 'DOC-05', nama: 'SOP PDKB-TM NO. 04.2: SP2B Lampiran Susunan Tim & No Sertifikat Hotline' },
+            5: { url: 'assets/DOC-06_SOP_05_SP3B.pdf', kode: 'DOC-06', nama: 'SOP PDKB-TM NO. 05: Surat Perintah Pengawasan Bertegangan (SP3B)' },
+            6: { url: 'assets/DOC-07_SOP_06_Tailgate_Session.pdf', kode: 'DOC-07', nama: 'SOP PDKB-TM NO. 06: Tailgate Session & Analisa Pembagian Tugas Hotline' },
+            7: { url: 'assets/DOC-08_JSA_K3_PDKB.pdf', kode: 'DOC-08', nama: 'Job Safety Analysis (JSA) & HIRARC Keselamatan Kerja PDKB TM' },
+            8: { url: 'assets/DOC-08_JSA_K3_PDKB.pdf', kode: 'DOC-08', nama: 'Job Safety Analysis (JSA) Lanjutan & Pengendalian Bahaya Induksi' },
+            9: { url: 'assets/DOC-09_Checklist_K3_PDKB.pdf', kode: 'DOC-09', nama: 'Check List Pengawasan K3 Pekerjaan PDKB TM (16+7+5 Butir Verifikasi)' },
+            10: { url: 'assets/DOC-02_SOP_01_Survey_Lokasi.pdf', kode: 'DOC-03', nama: 'Single Line Diagram (SLD) 20kV & Foto Kondisi Eksisting Aset' }
           };
           const item = pageMap[page] || pageMap[1];
           currentActivePdfUrl.value = item.url;
