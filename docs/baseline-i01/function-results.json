@@ -1,0 +1,102 @@
+{
+  "method": "Vue setup dalam VM, mutasi memori sintetis, tanpa DOM/UAT pengguna",
+  "results": [
+    {
+      "id": "T01",
+      "reproduced": true,
+      "observation": "WO baru hilang pada inisialisasi ulang."
+    },
+    {
+      "id": "T02",
+      "reproduced": true,
+      "observation": "WO Submitted baru absen di antrean Asman."
+    },
+    {
+      "id": "T03",
+      "reproduced": true,
+      "observation": "TL HAR diterima oleh ketiga handler persetujuan."
+    },
+    {
+      "id": "T09",
+      "reproduced": true,
+      "observation": [
+        {
+          "status": "Approved",
+          "flags": [
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "status": "Scheduled",
+          "flags": [
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "status": "Ongoing",
+          "flags": [
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "status": "Completed",
+          "flags": [
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T15",
+      "reproduced": true,
+      "observation": "Terjadwal tetapi briefing false menahan mulai."
+    },
+    {
+      "id": "T20",
+      "reproduced": true,
+      "observation": "Handler selesai menetapkan Completed tanpa penerimaan operasi."
+    },
+    {
+      "id": "T19",
+      "reproduced": true,
+      "observation": "Jawaban lintas WO sama dan WIP kosong dapat disahkan tanpa submit."
+    },
+    {
+      "id": "T22",
+      "reproduced": true,
+      "observation": "Report Revision masih memenuhi canCloseWO."
+    },
+    {
+      "id": "T23",
+      "reproduced": true,
+      "observation": "Komisi Unit diberi R03 dan handler tutup menerima perannya."
+    },
+    {
+      "id": "T04",
+      "reproduced": true,
+      "observation": "Edit draft TL OP beralih ke TL HAR."
+    },
+    {
+      "id": "T07",
+      "reproduced": true,
+      "observation": "Assignment Review mempertahankan seluruh flag approval."
+    },
+    {
+      "id": "T06",
+      "reproduced": true,
+      "observation": "Ajukan ulang Rejected membuat WO baru."
+    }
+  ]
+}

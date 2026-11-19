@@ -1,0 +1,616 @@
+{
+  "roles": {
+    "tl_op": {
+      "title": "Lane 01 · TL OP (Operasi)",
+      "shortTitle": "Lane 01 · TL OP",
+      "scope": "Inisiator Alternatif 1 (Tahap A)",
+      "badgeClass": "bg-blue-600 text-white",
+      "desc": "Team Leader Operasi. Mengidentifikasi kebutuhan pemeliharaan sistem jaringan dan mengajukan Work Order PDKB (Tahap A BPMN)."
+    },
+    "tl_har": {
+      "title": "Lane 02 · TL HAR (Pemeliharaan)",
+      "shortTitle": "Lane 02 · TL HAR",
+      "scope": "Inisiator Alternatif 2 (Tahap A)",
+      "badgeClass": "bg-sky-600 text-white",
+      "desc": "Team Leader Pemeliharaan. Mengidentifikasi anomali fisik hasil patroli/inspeksi dan mengajukan Work Order PDKB (Tahap A BPMN)."
+    },
+    "tl_konstruksi": {
+      "title": "Lane 03 · TL Konstruksi",
+      "shortTitle": "Lane 03 · Konstruksi",
+      "scope": "Inisiator Alternatif 3 (Tahap A)",
+      "badgeClass": "bg-indigo-600 text-white",
+      "desc": "Team Leader Konstruksi. Mengajukan Work Order PDKB untuk penyambungan aset atau konstruksi baru tanpa padam (Tahap A BPMN)."
+    },
+    "asman_jaringan": {
+      "title": "Lane 04 · Asisten Manajer Jaringan",
+      "shortTitle": "Lane 04 · Asman Jaringan",
+      "scope": "Verifikator Teknis (Tahap A, C, E)",
+      "badgeClass": "bg-amber-600 text-white",
+      "desc": "Verifikator awal seluruh pengajuan WO, pemeriksa & penyetuju dokumen JSA/IBPPR, tanda tangan Izin Ketinggian, dan evaluasi laporan bulanan."
+    },
+    "supervisor_pdkb": {
+      "title": "Lane 05 · Supervisor PDKB",
+      "shortTitle": "Lane 05 · Spv PDKB",
+      "scope": "Koordinator Unit PDKB (Tahap A-E)",
+      "badgeClass": "bg-teal-600 text-white",
+      "desc": "Evaluasi prioritas WO, verifikasi kelayakan survei, penanganan siklus On Hold, tanda tangan SP2B & SP3B, serta uji kompetensi delegasi."
+    },
+    "preparator_pdkb": {
+      "title": "Lane 06 · Preparator PDKB",
+      "shortTitle": "Lane 06 · Preparator",
+      "scope": "Teknik & Administrasi (Tahap B, C, E)",
+      "badgeClass": "bg-cyan-600 text-white",
+      "desc": "Survei lokasi, susun JSA & IBPPR, siapkan Izin Ketinggian, terbitkan SP2B/SP3B, koordinasi On Hold, dan susun laporan bulanan (Tahap B, C, E.4)."
+    },
+    "p2k3_k3l": {
+      "title": "Lane 07 · P2K3 / K3L",
+      "shortTitle": "Lane 07 · P2K3 / K3L",
+      "scope": "Keselamatan Kerja (Tahap C & D)",
+      "badgeClass": "bg-red-700 text-white",
+      "desc": "Menelaah dan mengesahkan dokumen JSA serta IBPPR, verifikasi keselamatan kerja ketinggian, dan penutupan izin K3."
+    },
+    "bagian_terkait": {
+      "title": "Lane 08 · Bagian Terkait",
+      "shortTitle": "Lane 08 · Bagian Terkait",
+      "scope": "Mitra & Unit Terkait Objek (Tahap C & D)",
+      "badgeClass": "bg-slate-600 text-white",
+      "desc": "Unit eksternal/terkait objek pekerjaan yang menandatangani izin kerja ketinggian dan penutupan izin."
+    },
+    "manajer_area": {
+      "title": "Lane 09 · Manajer Area / Ops",
+      "shortTitle": "Lane 09 · Manajer Area",
+      "scope": "Pemberi Otorisasi Tertinggi (Tahap A, C, E)",
+      "badgeClass": "bg-amber-700 text-white",
+      "desc": "Pemberi persetujuan akhir WO, pemutus pembatalan On Hold, penandatangan akhir SP2B/SP3B, dan pengesah laporan bulanan."
+    },
+    "pengawas_k3": {
+      "title": "Lane 10 · Pengawas K3 PDKB",
+      "shortTitle": "Lane 10 · Pengawas K3",
+      "scope": "K3 Lapangan Bertegangan (Tahap C & D)",
+      "badgeClass": "bg-red-600 text-white",
+      "desc": "Memimpin safety briefing, tanda tangan izin ketinggian, pengawasan K3 paralel saat pekerjaan bertegangan berlangsung, dan pelaksana SWA."
+    },
+    "kepala_regu": {
+      "title": "Lane 11 · Kepala Regu PDKB",
+      "shortTitle": "Lane 11 · Kepala Regu",
+      "scope": "Pimpinan Tim Lapangan (Tahap D)",
+      "badgeClass": "bg-emerald-600 text-white",
+      "desc": "Memimpin job briefing, mengajukan dan mengonfirmasi SOK jaringan ke piket, komando teknis pelaksanaan 20kV, minta penormalan, dan susun BA."
+    },
+    "pelaksana_pdkb": {
+      "title": "Lane 12 · Pelaksana PDKB",
+      "shortTitle": "Lane 12 · Pelaksana",
+      "scope": "Regu Eksekusi Hotline (Tahap D)",
+      "badgeClass": "bg-emerald-700 text-white",
+      "desc": "Pemeriksaan kesiapan alat & material bertegangan, eksekusi fisik pemeliharaan hotline/barehand 20kV, dan penataan lokasi."
+    },
+    "piket_area": {
+      "title": "Lane 13 · Piket Area",
+      "shortTitle": "Lane 13 · Piket Area",
+      "scope": "Pengatur Operasi Area (Tahap D.1 & D.3)",
+      "badgeClass": "bg-orange-600 text-white",
+      "desc": "Menerima permintaan SOK dari Kepala Regu dan meneruskannya ke Piket APD, serta mengonfirmasi kembali status penormalan jaringan."
+    },
+    "piket_apd": {
+      "title": "Lane 14 · Piket APD (Pengatur Distribusi)",
+      "shortTitle": "Lane 14 · Piket APD",
+      "scope": "Pengendali Sistem Distribusi (Tahap D.1 & D.3)",
+      "badgeClass": "bg-amber-600 text-white",
+      "desc": "Menganalisis sistem kelistrikan, menginstruksikan pelepasan recloser / proteksi ke Gardu Induk, dan mengizinkan manuver bertegangan."
+    },
+    "petugas_gi": {
+      "title": "Lane 15 · Petugas GI (Gardu Induk)",
+      "shortTitle": "Lane 15 · Petugas GI",
+      "scope": "Operator Gardu Induk (Tahap D.1 & D.3)",
+      "badgeClass": "bg-blue-700 text-white",
+      "desc": "Mengeksekusi penonaktifan recloser otomatis (lockout auto-reclose) dan pengaturan relay di Gardu Induk, serta menormalkannya kembali."
+    },
+    "komisi_unit": {
+      "title": "Lane 16 · Komisi PDKB Unit/Wilayah",
+      "shortTitle": "Lane 16 · Komisi Unit",
+      "scope": "Komisi Pengawas Regional (Tahap E.4)",
+      "badgeClass": "bg-purple-600 text-white",
+      "desc": "Menerima, memeriksa, dan mengevaluasi laporan konsolidasi bulanan kinerja dan keselamatan PDKB di tingkat Unit Induk Distribusi (UID)."
+    },
+    "komisi_pusat": {
+      "title": "Lane 17 · Komisi PDKB Pusat",
+      "shortTitle": "Lane 17 · Komisi Pusat",
+      "scope": "Komisi Nasional PT PLN (Tahap E.4)",
+      "badgeClass": "bg-purple-800 text-white",
+      "desc": "Menerima laporan akhir kinerja, jam kerja aman, dan ENS saved dari seluruh unit PDKB se-Indonesia (Kantor Pusat PLN)."
+    },
+    "superadmin": {
+      "title": "Super Admin",
+      "shortTitle": "Super Admin",
+      "scope": "Administrator Sistem Terpadu (All Lanes)",
+      "badgeClass": "bg-slate-900 text-white",
+      "desc": "Pengelola tertinggi sistem IWOMS dengan hak akses penuh ke seluruh layar dan simulasi peran."
+    }
+  },
+  "screens": {
+    "dashboard": [
+      {
+        "code": "D01",
+        "title": "Dashboard Berbasis Peran"
+      }
+    ],
+    "perencanaan": [
+      {
+        "code": "P01",
+        "title": "Daftar & Pengajuan WO"
+      },
+      {
+        "code": "P02",
+        "title": "Persetujuan & Penugasan"
+      },
+      {
+        "code": "P03",
+        "title": "Persiapan & Penjadwalan"
+      },
+      {
+        "code": "P04",
+        "title": "Rencana Operasi"
+      }
+    ],
+    "pelaksanaan": [
+      {
+        "code": "E01",
+        "title": "Pelaksanaan WO"
+      },
+      {
+        "code": "E02",
+        "title": "Kesiapan & Pengawasan K3"
+      },
+      {
+        "code": "E03",
+        "title": "Operasi Jaringan"
+      }
+    ],
+    "pelaporan": [
+      {
+        "code": "R01",
+        "title": "Laporan Penyelesaian WO"
+      },
+      {
+        "code": "R02",
+        "title": "Pengesahan WIP"
+      },
+      {
+        "code": "R03",
+        "title": "Pemeriksaan & Penutupan"
+      },
+      {
+        "code": "R04",
+        "title": "Laporan Operasi Distribusi"
+      },
+      {
+        "code": "R05",
+        "title": "Rekap & Evaluasi"
+      }
+    ],
+    "master": [
+      {
+        "code": "M01",
+        "title": "Unit Kerja"
+      },
+      {
+        "code": "M02",
+        "title": "Personel"
+      },
+      {
+        "code": "M03",
+        "title": "User"
+      },
+      {
+        "code": "M04",
+        "title": "Mitra Kerja"
+      },
+      {
+        "code": "M05",
+        "title": "Katalog WO"
+      },
+      {
+        "code": "M06",
+        "title": "Operasi Distribusi"
+      },
+      {
+        "code": "M07",
+        "title": "Referensi Dokumen"
+      },
+      {
+        "code": "M08",
+        "title": "Proses Bisnis & Risiko"
+      }
+    ],
+    "profil": [
+      {
+        "code": "U01",
+        "title": "Profil Saya"
+      }
+    ],
+    "pengaturan": [
+      {
+        "code": "U02",
+        "title": "Pengaturan & Parameter"
+      }
+    ]
+  },
+  "permissions": {
+    "tl_op": [
+      "D01",
+      "P01",
+      "U01"
+    ],
+    "tl_har": [
+      "D01",
+      "P01",
+      "U01"
+    ],
+    "tl_konstruksi": [
+      "D01",
+      "P01",
+      "U01"
+    ],
+    "asman_jaringan": [
+      "D01",
+      "P01",
+      "P02",
+      "R02",
+      "R03",
+      "U01"
+    ],
+    "supervisor_pdkb": [
+      "D01",
+      "P01",
+      "P02",
+      "P03",
+      "R01",
+      "R03",
+      "U01"
+    ],
+    "manajer_area": [
+      "D01",
+      "P01",
+      "P02",
+      "R03",
+      "R05",
+      "U01"
+    ],
+    "preparator_pdkb": [
+      "D01",
+      "P01",
+      "P03",
+      "P04",
+      "R01",
+      "R03",
+      "R05",
+      "U01"
+    ],
+    "p2k3_k3l": [
+      "D01",
+      "R02",
+      "R05",
+      "U01"
+    ],
+    "bagian_terkait": [
+      "D01",
+      "P02",
+      "R01",
+      "U01"
+    ],
+    "kepala_regu": [
+      "D01",
+      "E01",
+      "R01",
+      "U01"
+    ],
+    "pengawas_k3": [
+      "D01",
+      "E02",
+      "R01",
+      "U01"
+    ],
+    "pelaksana_pdkb": [
+      "D01",
+      "E01",
+      "U01"
+    ],
+    "piket_area": [
+      "D01",
+      "P04",
+      "E03",
+      "R04",
+      "U01"
+    ],
+    "piket_apd": [
+      "D01",
+      "P04",
+      "E03",
+      "R04",
+      "U01"
+    ],
+    "petugas_gi": [
+      "D01",
+      "E03",
+      "R04",
+      "U01"
+    ],
+    "komisi_unit": [
+      "D01",
+      "R03",
+      "R05",
+      "U01"
+    ],
+    "komisi_pusat": [
+      "D01",
+      "R05",
+      "U01"
+    ],
+    "superadmin": [
+      "D01",
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "E01",
+      "E02",
+      "E03",
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "M01",
+      "M02",
+      "M03",
+      "M04",
+      "M05",
+      "M06",
+      "M07",
+      "M08",
+      "U01",
+      "U02"
+    ]
+  },
+  "documents": {
+    "DOC-01": {
+      "kode": "DOC-01",
+      "nama": "Nota Dinas Usulan Pekerjaan",
+      "pengisi": "TL HAR / TL OP / TL Konstruksi (Lane 01-03)",
+      "pengesah": "Asman Jaringan (Lane 04)",
+      "fungsi": "Surat pembuka: dasar permohonan penanganan jaringan tanpa padam.",
+      "lane_pengisi": "Lane 01-03",
+      "lane_pengesah": "Lane 04",
+      "tahap": "Tahap A (Pengusulan)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 1
+    },
+    "DOC-03": {
+      "kode": "DOC-03",
+      "nama": "Single Line Diagram (SLD)",
+      "pengisi": "Sistem GIS / Pengusul",
+      "pengesah": "Asman Jaringan",
+      "fungsi": "Denah skema section penyulang dari Gardu Induk ke titik tiang kerja.",
+      "lane_pengisi": "Sistem GIS / Pengusul",
+      "lane_pengesah": "Lane 04",
+      "tahap": "Tahap A & C",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 10
+    },
+    "DOC-02": {
+      "kode": "DOC-02",
+      "nama": "SOP 01: Formulir Survey Lokasi",
+      "pengisi": "Preparator PDKB (Lane 06)",
+      "pengesah": "Supervisor PDKB & Asman Jaringan",
+      "fungsi": "Mengukur kelayakan fisik tiang (struktur tanah, tinggi tiang, jarak jalan, pohon, konduktor).",
+      "lane_pengisi": "Lane 06",
+      "lane_pengesah": "Lane 04 & 05",
+      "tahap": "Tahap B (Survei Lapangan)",
+      "format": "PDF/JPG",
+      "wajib": true,
+      "pdf_page": 2
+    },
+    "DOC-08": {
+      "kode": "DOC-08",
+      "nama": "Job Safety Analysis (JSA)",
+      "pengisi": "Preparator & Kepala Regu (Lane 06, 11)",
+      "pengesah": "Pejabat K3L (Lane 07) & Asman Jaringan",
+      "fungsi": "Menetapkan bahaya sengatan 20kV, APD wajib, dan prosedur mitigasi.",
+      "lane_pengisi": "Lane 06 & 11",
+      "lane_pengesah": "Lane 04 & 07",
+      "tahap": "Tahap B & C (K3L)",
+      "format": "PDF/XLS",
+      "wajib": true,
+      "pdf_page": 7
+    },
+    "DOC-05": {
+      "kode": "DOC-05",
+      "nama": "SOP 04.2: Susunan Tim Hotline",
+      "pengisi": "Preparator PDKB (Lane 06)",
+      "pengesah": "Seluruh 6 Personil Hotline (Lane 10-12)",
+      "fungsi": "Daftar 6 personil bersertifikat kompetensi aktif yang boleh naik menyentuh kawat 20kV.",
+      "lane_pengisi": "Lane 06",
+      "lane_pengesah": "Lane 10-12",
+      "tahap": "Tahap C (Penugasan)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 4
+    },
+    "DOC-04": {
+      "kode": "DOC-04",
+      "nama": "SOP 04.1: SP2B (Perintah Pelaksanaan)",
+      "pengisi": "Preparator (Draft) & Supervisor PDKB",
+      "pengesah": "Manajer Area / Kepala Operasi (Lane 09)",
+      "fungsi": "Surat Kuasa Hukum Tertinggi: Izin legal menyentuh instalasi listrik hidup 20kV.",
+      "lane_pengisi": "Lane 05-06",
+      "lane_pengesah": "Lane 09",
+      "tahap": "Tahap C (Izin Operasi)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 3
+    },
+    "DOC-06": {
+      "kode": "DOC-06",
+      "nama": "SOP 05: SP3B (Perintah Pengawasan)",
+      "pengisi": "Preparator (Draft) & Supervisor PDKB",
+      "pengesah": "Manajer Area / Kepala Operasi (Lane 09)",
+      "fungsi": "Surat penugasan independen untuk Pengawas Pekerjaan dan Pengawas K3.",
+      "lane_pengisi": "Lane 05-06",
+      "lane_pengesah": "Lane 09",
+      "tahap": "Tahap C (Pengawasan)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 5
+    },
+    "DOC-07": {
+      "kode": "DOC-07",
+      "nama": "SOP 06: Tailgate Session",
+      "pengisi": "Pengawas Pekerjaan & Pengawas K3 (Lane 10, 11)",
+      "pengesah": "Kepala Regu & Pengawas K3",
+      "fungsi": "Diisi di kap mobil/tarpaulin sesaat sebelum naik bucket: verifikasi bahaya pohon, lalu lintas, dan cuaca.",
+      "lane_pengisi": "Lane 10-11",
+      "lane_pengesah": "Lane 10-11",
+      "tahap": "Tahap D (Hari-H Lapangan)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 6
+    },
+    "DOC-09": {
+      "kode": "DOC-09",
+      "nama": "Checklist K3 (16+7+5 Butir)",
+      "pengisi": "Pengawas K3 PDKB (Lane 10)",
+      "pengesah": "Pengawas K3 & Supervisor PDKB",
+      "fungsi": "Lembar kendali keselamatan berlapis: 16 butir persiapan -> 7 butir saat menyentuh listrik -> 5 butir saat perapihan dan doa penutup.",
+      "lane_pengisi": "Lane 10",
+      "lane_pengesah": "Lane 05 & 10",
+      "tahap": "Tahap D (Hari-H Lapangan)",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 9
+    },
+    "DOC-10": {
+      "kode": "DOC-10",
+      "nama": "Formulir Izin Kerja Ketinggian & Penutupan",
+      "pengisi": "Preparator PDKB (Lane 06)",
+      "pengesah": "Bagian Terkait (Lane 08), P2K3 (Lane 07), Asman (Lane 04), Pengawas K3 (Lane 10)",
+      "fungsi": "Legalitas keselamatan kerja di atas 1.8 meter & berita acara serah terima kembali area instalasi objek.",
+      "lane_pengisi": "Lane 06",
+      "lane_pengesah": "Lane 04, 07, 08, 10",
+      "tahap": "Tahap C.2 & D.4",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 7
+    },
+    "DOC-11": {
+      "kode": "DOC-11",
+      "nama": "Berita Acara Delegasi Pengawasan",
+      "pengisi": "Kepala Regu (Lane 11) & Pelaksana (Lane 12)",
+      "pengesah": "Supervisor PDKB (Lane 05 - Pihak Mengetahui)",
+      "fungsi": "Penunjukan resmi pengawas pengganti yang kompeten jika personil pengawas utama berhalangan hadir.",
+      "lane_pengisi": "Lane 11-12",
+      "lane_pengesah": "Lane 05",
+      "tahap": "Tahap F.4 (Kondisional)",
+      "format": "PDF",
+      "wajib": false,
+      "pdf_page": 5
+    },
+    "DOC-12": {
+      "kode": "DOC-12",
+      "nama": "Pemberitahuan Penyelesaian WO (BAPP)",
+      "pengisi": "Preparator (Lane 06) & Kepala Regu (Lane 11)",
+      "pengesah": "Supervisor PDKB (Lane 05) & Manajer Area (Lane 09)",
+      "fungsi": "Berita acara resmi tuntasnya pekerjaan fisik 100% dan penutupan administrasi Work Order.",
+      "lane_pengisi": "Lane 06 & 11",
+      "lane_pengesah": "Lane 05 & 09",
+      "tahap": "Tahap E.1–E.3",
+      "format": "PDF",
+      "wajib": true,
+      "pdf_page": 1
+    },
+    "DOC-13": {
+      "kode": "DOC-13",
+      "nama": "Laporan Konsolidasi Bulanan Komisi PDKB",
+      "pengisi": "Preparator PDKB (Lane 06)",
+      "pengesah": "Asman (Lane 04), Supervisor (Lane 05), Manajer Area (Lane 09)",
+      "fungsi": "Laporan kinerja keselamatan, saving kWh, dan audit 9 SOP ke Komisi PDKB Unit (Lane 16) & Pusat (Lane 17).",
+      "lane_pengisi": "Lane 06",
+      "lane_pengesah": "Lane 04, 05, 09 -> Lane 16-17",
+      "tahap": "Tahap E.4 (Pelaporan Bulanan)",
+      "format": "PDF/XLS",
+      "wajib": true,
+      "pdf_page": 10
+    }
+  },
+  "assets": [
+    {
+      "name": "DOC-01_Cover_PDKB.pdf",
+      "sha256": "ad2649bbc763b26530f2f9ded7df773f8a5f3587344bf49604d2707db59e3e24"
+    },
+    {
+      "name": "DOC-02_SOP_01_Survey_Lokasi.pdf",
+      "sha256": "ba41f587e32613f58f0a821dcd291b8ce163d21e37d7ee2a95870d79a0715d47"
+    },
+    {
+      "name": "DOC-04_SOP_04_1_SP2B.pdf",
+      "sha256": "0c24d8421619ff76607b7e653fad90f0501ad1f7d5e2fd0ab740369cd274bc14"
+    },
+    {
+      "name": "DOC-05_SOP_04_2_Susunan_Tim.pdf",
+      "sha256": "3b6281ac72af3eea6a4e01af003c56b6e46a9d803dd8069fd29847715fdf9f96"
+    },
+    {
+      "name": "DOC-06_SOP_05_SP3B.pdf",
+      "sha256": "bcd0d08545f350eb8458a5d13bc6d33c0c00a3c64771b0d76861c14e1ee2ecc2"
+    },
+    {
+      "name": "DOC-07_SOP_06_Tailgate_Session.pdf",
+      "sha256": "0e5f75218448d7dd907c49211c0bfd763e94b6a0abb24c41cb33c915c3834f1c"
+    },
+    {
+      "name": "DOC-08_JSA_K3_PDKB.pdf",
+      "sha256": "0618d12d57f97180fe2e6c646a0a6adbe136075993ee9286a02b9f3614560088"
+    },
+    {
+      "name": "DOC-09_Checklist_K3_PDKB.pdf",
+      "sha256": "6df588824163e1fb36a1dd3def2752fe526038179eabe8731664b86f33750e64"
+    },
+    {
+      "name": "Im1.jpg",
+      "sha256": "b12e25e97e4f763786b18f5fcd6f5302fb53974267af4c4baaa03866460aa89d"
+    },
+    {
+      "name": "Im2.jpg",
+      "sha256": "b705d59cb6f3d5e387aeb058e93252c81fc23c359cee9aa33a9ca57ebd428609"
+    },
+    {
+      "name": "Im6.jpg",
+      "sha256": "1817e7c06f6ce85c67abcdf2b19869f876fc40c8a9515ebd505d6cc97f49a31c"
+    },
+    {
+      "name": "Im7.jpg",
+      "sha256": "0f9a148c3fa8c714b6b123185b27762383b71a4872b03cc7f59216a75eefd35a"
+    },
+    {
+      "name": "logos_b64.json",
+      "sha256": "ab2bc65de868354343f283598ad8f3d06ad7e69f3025ac8c8490e44410be194c"
+    },
+    {
+      "name": "logo_pdkb_resmi.jpg",
+      "sha256": "b705d59cb6f3d5e387aeb058e93252c81fc23c359cee9aa33a9ca57ebd428609"
+    },
+    {
+      "name": "logo_pln_resmi.jpg",
+      "sha256": "b12e25e97e4f763786b18f5fcd6f5302fb53974267af4c4baaa03866460aa89d"
+    },
+    {
+      "name": "pdkb_dokumen_resmi.pdf",
+      "sha256": "a0faf4b1fee3da54a345efd06daf67b00123cfb0c0454b3b0554fe4b93005578"
+    },
+    {
+      "name": "SP2B_-_SP3B.xlsm",
+      "sha256": "916520b6cae6810f39e28bb8c029e8bf5db219b13830c162caa466ec6304b839"
+    }
+  ]
+}

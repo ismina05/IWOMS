@@ -1,0 +1,164 @@
+diff --git a/index.html b/index.html
+index 715e975..897d041 100644
+--- a/index.html
++++ b/index.html
+@@ -5,6 +5,9 @@
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Sistem Terintegrasi Pengelolaan Work Order dan Pengawasan K3 PLN UID Yogyakarta.">
+   <title>IWOMS - Integrated Work Order Management System | PLN UID</title>
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Google+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+   <!-- Tailwind CSS via CDN -->
+   <script src="https://cdn.tailwindcss.com"></script>
+   <!-- Vue 3 via CDN (Global build) -->
+@@ -14,6 +17,28 @@
+     tailwind.config = {
+       theme: {
+         extend: {
++          fontFamily: {
++            sans: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
++            display: ['Google Sans', 'Helvetica Neue', 'Arial', 'sans-serif'],
++            mono: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
++          },
++          fontWeight: {
++            normal: '400',
++            medium: '500',
++            semibold: '500',
++            bold: '500',
++            extrabold: '500',
++            black: '500',
++          },
++          fontSize: {
++            xs: ['13px', { lineHeight: '17px' }],
++            sm: ['14px', { lineHeight: '21px' }],
++            base: ['16px', { lineHeight: '24px' }],
++            lg: ['18px', { lineHeight: '25.2px' }],
++            xl: ['20px', { lineHeight: '28px' }],
++            '2xl': ['24px', { lineHeight: '26.4px' }],
++            '3xl': ['32px', { lineHeight: '35.2px' }],
++          },
+           colors: {
+             pln: {
+               blue: '#005E82',
+@@ -89,6 +114,36 @@
+     }
+   </style>
+ 
++  <style id="symmetry-typography">
++    body {
++      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
++      font-weight: 400;
++      line-height: 1.5;
++      letter-spacing: normal;
++    }
++    button, input, select, textarea { font-family: inherit; }
++    h1, h2, h3, h4, h5, h6, .font-display {
++      font-family: 'Google Sans', 'Helvetica Neue', Arial, sans-serif;
++      font-weight: 500;
++      line-height: 1.1;
++      letter-spacing: -.03em;
++    }
++    strong, b { font-weight: 500; }
++    [class~="text-[9px]"], [class~="text-[10px]"] {
++      font-size: 11px;
++      line-height: 1.4;
++    }
++    [class~="text-[11px]"] { font-size: 12px; line-height: 17px; }
++    [class~="font-mono"], code, kbd {
++      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
++      font-variant-numeric: tabular-nums;
++      letter-spacing: -.1px;
++    }
++    [class~="tracking-wide"], [class~="tracking-wider"], [class~="tracking-widest"] {
++      letter-spacing: normal;
++    }
++  </style>
++
+   <style id="print-style-pdkb">
+     @media print {
+       body * {
+@@ -130,18 +185,11 @@
+                 </svg>
+               </div>
+               <div class="leading-tight">
+-                <span class="font-black text-sm text-white tracking-wide block">PLN WORKSPACE</span>
+-                <span class="text-[10px] text-sky-400 font-bold block leading-none">IWOMS V1.2</span>
++                <span class="font-display font-medium text-sm text-white block">PLN WORKSPACE</span>
++                <span class="text-[10px] text-sky-400 font-bold block leading-none">PLN UID YOGYAKARTA</span>
+               </div>
+             </div>
+ 
+-            <!-- Center Title for Clean Enterprise Look (Visible on wide screens, neatly hidden on medium to avoid crowding) -->
+-            <div class="hidden 2xl:flex items-center space-x-2 text-xs font-semibold text-slate-300 shrink-0 whitespace-nowrap">
+-              <span class="text-sky-400">|</span>
+-              <span class="text-white font-bold">Integrated Work Order Management System</span>
+-              <span class="text-slate-400">&bull;</span>
+-              <span class="text-amber-300 font-medium">PLN UID Yogyakarta</span>
+-            </div>
+           </div>
+ 
+           <!-- Right: Role Switcher, SWA & User Profile -->
+@@ -223,14 +271,6 @@
+               </div>
+             </div>
+ 
+-            <!-- Perlu Aksi Badge -->
+-            <div class="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 text-xs shrink-0 whitespace-nowrap">
+-              <svg class="w-4 h-4 text-amber-400 shrink-0" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+-              <span class="text-white font-semibold hidden md:inline whitespace-nowrap">Perlu Aksi:</span>
+-              <span class="w-5 h-5 bg-red-500 text-white rounded-full font-black text-xs flex items-center justify-center shrink-0">
+-                {{ filteredMyActions.length }}
+-              </span>
+-            </div>
+           </div>
+ 
+         </div>
+@@ -291,7 +331,6 @@
+               </div>
+             </div>
+             <div class="min-w-0 flex-1">
+-              <div class="text-[10px] text-slate-400 font-semibold font-semibold">Selamat Datang,</div>
+               <div class="text-xs font-bold text-white truncate">{{ currentUser.name }}</div>
+               <div class="text-[10px] text-sky-400 font-bold truncate">{{ activeRoleInfo.title }}</div>
+             </div>
+@@ -375,10 +414,8 @@
+ 
+           <!-- Breadcrumb & Waktu Sistem -->
+           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+-            <div class="flex items-center space-x-2 text-xs text-slate-500">
+-              <span class="font-black text-slate-800 text-sm">Dashboard Kontrol Panel</span>
+-              <span>/</span>
+-              <span>Ringkasan Eksekutif & Antrean Tugas</span>
++            <div class="text-sm text-slate-700">
++              Selamat Datang, <span class="font-bold text-slate-900">{{ currentUser.name }}</span>
+             </div>
+             <div class="inline-flex items-center space-x-1.5 text-xs text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg shadow-xs font-mono">
+               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+@@ -445,9 +482,6 @@
+                     <h2 class="text-lg font-black text-slate-900 tracking-tight flex items-center space-x-2">
+                       <span>Daftar Pekerjaan & Antrean WO</span>
+                     </h2>
+-                    <div class="text-xs text-slate-500 mt-0.5">
+-                      Menampilkan {{ displayedWorkOrders.length }} dari {{ workOrders.length }} Work Order Terpantau
+-                    </div>
+                   </div>
+ 
+                   <!-- Mode Switcher Buttons (Tabel Data Aktif Secara Default) -->
+@@ -633,7 +667,7 @@
+                         class="px-1.5 py-0.5 rounded text-[9px] font-black tracking-wide"
+                         :class="wo.kondisi_operasi === 'Padam' ? 'bg-red-100 text-red-800 border border-red-300' : 'bg-amber-100 text-amber-900 border border-amber-300'"
+                       >
+-                        {{ wo.kondisi_operasi === 'Padam' ? '🔴 PADAM' : '⚡ PDKB' }}
++                        {{ wo.kondisi_operasi === 'Padam' ? 'PADAM' : 'PDKB' }}
+                       </span>
+                       <span v-if="wo.working_permit_nomor" class="px-1.5 py-0.5 bg-blue-50 text-blue-800 border border-blue-200 rounded text-[9px] font-semibold">
+                         WP Inspekta: Aktif
+@@ -1249,7 +1283,6 @@
+       <aside class="w-full xl:w-[315px] shrink-0 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4 sticky top-4">
+         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+           <div class="flex items-center space-x-2">
+-            <svg class="w-5 h-5 text-amber-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
+             <h3 class="font-extrabold text-base text-slate-900 tracking-tight">Aksi Prioritas {{ activeRoleInfo.title }}</h3>
+           </div>
+           <span class="w-6 h-6 rounded-full bg-red-500 text-white font-black text-xs flex items-center justify-center shadow-xs">

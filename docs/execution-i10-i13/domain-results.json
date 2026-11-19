@@ -1,0 +1,73 @@
+{
+  "count": 17,
+  "results": [
+    {
+      "name": "SP2B and SP3B issue separately, checklist and six handoffs precede readiness",
+      "status": "PASS"
+    },
+    {
+      "name": "SP2B reviewer 1 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "SP2B reviewer 2 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "SP3B reviewer 1 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "SP3B reviewer 2 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "EQUIPMENT_CHECKLIST reviewer 1 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "EQUIPMENT_CHECKLIST reviewer 2 rejects, hold restores exact task and old version stays",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong receiver and missing acknowledgment cannot complete SP2B receipt",
+      "status": "PASS"
+    },
+    {
+      "name": "SP3B is not receivable by K3 before Kepala Regu and references issued version",
+      "status": "PASS"
+    },
+    {
+      "name": "H08 restores recheck instruction, then health and APD failures stay in own task",
+      "status": "PASS"
+    },
+    {
+      "name": "SOK request and six role actions confirm only this WO and stop at I14 boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "SOK failed application, retry and H09 demand a full new round",
+      "status": "PASS"
+    },
+    {
+      "name": "SOK wrong role, wrong request and failed save preserve state, retries are idempotent",
+      "status": "PASS"
+    },
+    {
+      "name": "two WOs preserve separate document numbers, teams, permits and SOK events",
+      "status": "PASS"
+    },
+    {
+      "name": "letters cannot skip authority verification, readiness or sequential issuance",
+      "status": "PASS"
+    },
+    {
+      "name": "incomplete SP3B distribution rolls back both recipients",
+      "status": "PASS"
+    },
+    {
+      "name": "issuance retry signs once and stores actual reviewer and issuer",
+      "status": "PASS"
+    }
+  ]
+}

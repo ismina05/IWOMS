@@ -1,0 +1,165 @@
+{
+  "woId": "WO-20261119-dd5c4b6f",
+  "finalEvidence": {
+    "nodeId": "Node_periksa_cuaca",
+    "documents": [
+      {
+        "type": "JSA",
+        "version": 1,
+        "status": "rejected"
+      },
+      {
+        "type": "JSA",
+        "version": 2,
+        "status": "approved"
+      },
+      {
+        "type": "IBPPR",
+        "version": 1,
+        "status": "approved"
+      },
+      {
+        "type": "HEIGHT_PERMIT",
+        "version": 1,
+        "status": "issued"
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 1
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 2
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 3
+      },
+      {
+        "type": "SP2B",
+        "version": 1,
+        "status": "issued",
+        "number": "SP2B/WO-20261119-dd5c4b6f"
+      },
+      {
+        "type": "SP3B",
+        "version": 1,
+        "status": "issued",
+        "number": "SP3B/WO-20261119-dd5c4b6f"
+      },
+      {
+        "type": "EQUIPMENT_CHECKLIST",
+        "version": 1,
+        "status": "approved"
+      }
+    ],
+    "sok": {
+      "requestId": "be62fff0-4a74-423d-bfdf-4dfd33f32a0c",
+      "actorId": "demo:kepala_regu",
+      "at": "2026-11-19T00:53:30.901Z"
+    },
+    "rounds": 2,
+    "operations": 14,
+    "holds": [
+      "H01",
+      "H08",
+      "H09"
+    ]
+  },
+  "bindingEvidence": [
+    {
+      "number": "SP2B/WO-20261119-19405d9a",
+      "team": [
+        "Tim satu pengawas pekerjaan",
+        "Tim satu pengawas K3"
+      ]
+    },
+    {
+      "number": "SP2B/WO-20261119-9cc64644",
+      "team": [
+        "Tim dua pengawas pekerjaan",
+        "Tim dua pengawas K3"
+      ]
+    }
+  ],
+  "result": "PASS",
+  "method": "DOM inputs/clicks, CDP Enter, role picker, letters/checklist/receipts, H08, health recovery, two SOK rounds and H09, isolated two-WO fixture for preview binding",
+  "flags": [
+    [
+      true,
+      true,
+      false,
+      false
+    ],
+    [
+      true,
+      true,
+      false,
+      false
+    ],
+    [
+      true,
+      true,
+      false,
+      false
+    ],
+    [
+      true,
+      true,
+      false,
+      false
+    ]
+  ],
+  "evidence": {
+    "documents": [
+      {
+        "type": "JSA",
+        "version": 1,
+        "status": "rejected",
+        "fileCount": 1
+      },
+      {
+        "type": "JSA",
+        "version": 2,
+        "status": "approved",
+        "fileCount": 0
+      },
+      {
+        "type": "IBPPR",
+        "version": 1,
+        "status": "approved",
+        "fileCount": 0
+      },
+      {
+        "type": "HEIGHT_PERMIT",
+        "version": 1,
+        "status": "issued",
+        "fileCount": 0
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 1,
+        "fileCount": 0
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 2,
+        "fileCount": 0
+      },
+      {
+        "type": "AUTHORITY_ROSTER",
+        "version": 3,
+        "fileCount": 0
+      }
+    ],
+    "holds": {
+      "0": {}
+    }
+  },
+  "metrics": {
+    "width": 390,
+    "scroll": 390,
+    "font": "Geist, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  },
+  "errors": []
+}

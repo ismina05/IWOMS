@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sistem Terintegrasi Pengelolaan Work Order dan Pengawasan K3 PLN UID Yogyakarta.">
   <title>IWOMS - Integrated Work Order Management System | PLN UID</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Google+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Vue 3 via CDN (Global build) -->
@@ -14,6 +17,28 @@
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+            display: ['Google Sans', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            mono: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500',
+            semibold: '500',
+            bold: '500',
+            extrabold: '500',
+            black: '500',
+          },
+          fontSize: {
+            xs: ['13px', { lineHeight: '17px' }],
+            sm: ['14px', { lineHeight: '21px' }],
+            base: ['16px', { lineHeight: '24px' }],
+            lg: ['18px', { lineHeight: '25.2px' }],
+            xl: ['20px', { lineHeight: '28px' }],
+            '2xl': ['24px', { lineHeight: '26.4px' }],
+            '3xl': ['32px', { lineHeight: '35.2px' }],
+          },
           colors: {
             pln: {
               blue: '#005E82',
@@ -89,6 +114,36 @@
     }
   </style>
 
+  <style id="symmetry-typography">
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: normal;
+    }
+    button, input, select, textarea { font-family: inherit; }
+    h1, h2, h3, h4, h5, h6, .font-display {
+      font-family: 'Google Sans', 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+    }
+    strong, b { font-weight: 500; }
+    [class~="text-[9px]"], [class~="text-[10px]"] {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    [class~="text-[11px]"] { font-size: 12px; line-height: 17px; }
+    [class~="font-mono"], code, kbd {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.1px;
+    }
+    [class~="tracking-wide"], [class~="tracking-wider"], [class~="tracking-widest"] {
+      letter-spacing: normal;
+    }
+  </style>
+
   <style id="print-style-pdkb">
     @media print {
       body * {
@@ -118,7 +173,7 @@
     <!-- ==================== PLN WORKSPACE ENTERPRISE HEADER ==================== -->
     <nav class="bg-slate-950 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
       <div class="max-w-[1760px] mx-auto px-4 sm:px-6">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 py-3 sm:py-0 sm:h-16">
           
           <!-- Left: Logo & Navigation Tabs -->
           <div class="flex items-center space-x-6">
@@ -130,18 +185,11 @@
                 </svg>
               </div>
               <div class="leading-tight">
-                <span class="font-black text-sm text-white tracking-wide block">PLN WORKSPACE</span>
-                <span class="text-[10px] text-sky-400 font-bold block leading-none">IWOMS V1.2</span>
+                <span class="font-display font-medium text-sm text-white block">PLN WORKSPACE</span>
+                <span class="text-[10px] text-sky-400 font-bold block leading-none">PLN UID YOGYAKARTA</span>
               </div>
             </div>
 
-            <!-- Center Title for Clean Enterprise Look (Visible on wide screens, neatly hidden on medium to avoid crowding) -->
-            <div class="hidden 2xl:flex items-center space-x-2 text-xs font-semibold text-slate-300 shrink-0 whitespace-nowrap">
-              <span class="text-sky-400">|</span>
-              <span class="text-white font-bold">Integrated Work Order Management System</span>
-              <span class="text-slate-400">&bull;</span>
-              <span class="text-amber-300 font-medium">PLN UID Yogyakarta</span>
-            </div>
           </div>
 
           <!-- Right: Role Switcher, SWA & User Profile -->
@@ -150,6 +198,7 @@
             <div class="flex items-center space-x-1.5 bg-slate-800/90 px-2.5 py-1 rounded-xl border border-slate-700 text-xs shrink-0">
               <span class="text-amber-400 font-bold text-[11px] shrink-0">Role:</span>
               <select 
+                aria-label="Role simulasi aktif"
                 v-model="activeRoleKey" 
                 @change="onRoleChange" 
                 class="bg-slate-900 text-white font-semibold text-xs rounded border border-slate-600 px-2 py-0.5 focus:ring-1 focus:ring-sky-400 focus:outline-none cursor-pointer max-w-[190px] sm:max-w-[240px] truncate"
@@ -193,7 +242,7 @@
 
             <!-- Emergency SWA Button -->
             <button 
-              v-if="canRecordSWA"
+              v-if="canRecordSWA && workflow.referenceMode"
               @click="openSWAModal(null)" 
               class="flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow transition shrink-0 whitespace-nowrap"
               title="Tombol Darurat Penghentian Pekerjaan Berbahaya"
@@ -223,14 +272,6 @@
               </div>
             </div>
 
-            <!-- Perlu Aksi Badge -->
-            <div class="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 text-xs shrink-0 whitespace-nowrap">
-              <svg class="w-4 h-4 text-amber-400 shrink-0" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-              <span class="text-white font-semibold hidden md:inline whitespace-nowrap">Perlu Aksi:</span>
-              <span class="w-5 h-5 bg-red-500 text-white rounded-full font-black text-xs flex items-center justify-center shrink-0">
-                {{ filteredMyActions.length }}
-              </span>
-            </div>
           </div>
 
         </div>
@@ -240,7 +281,7 @@
     <!-- ==================== SUB-BAR SCREEN SELECTOR (Shown only outside Dashboard) ==================== -->
     <div v-if="activeMenu !== 'dashboard'" class="bg-white border-b border-slate-200 px-4 sm:px-8 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-sm">
       <div class="flex items-center space-x-2">
-        <span class="text-xs font-bold text-slate-400 font-semibold">Layar Aktif (Tahap 3):</span>
+        <span class="text-xs font-bold text-slate-400 font-semibold">Halaman aktif</span>
         <div class="flex flex-wrap gap-1">
           <button 
             v-for="scr in currentMenuScreens" 
@@ -291,7 +332,6 @@
               </div>
             </div>
             <div class="min-w-0 flex-1">
-              <div class="text-[10px] text-slate-400 font-semibold font-semibold">Selamat Datang,</div>
               <div class="text-xs font-bold text-white truncate">{{ currentUser.name }}</div>
               <div class="text-[10px] text-sky-400 font-bold truncate">{{ activeRoleInfo.title }}</div>
             </div>
@@ -367,18 +407,76 @@
 
       <!-- SISI KANAN: AREA KERJA UTAMA (MAIN CONTENT) -->
       <main class="flex-1 min-w-0 bg-slate-100/90 p-4 sm:p-6 lg:p-7 overflow-y-auto space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+          <span>{{ workflow.referenceMode ? 'Referensi ? data contoh I01' : 'Demo kerja PDKB ? data tersimpan pada browser ini' }}</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="inline-flex items-center gap-2"><input type="checkbox" v-model="workflow.referenceMode">Lihat referensi I01</label>
+            <button type="button" @click="workflow.reload" class="border border-slate-300 rounded-lg px-3 py-2 bg-white">Muat ulang data</button>
+            <button v-if="activeRoleKey === 'superadmin'" type="button" @click="workflow.reset" class="border border-red-200 rounded-lg px-3 py-2 bg-white text-red-700">Reset demo kerja</button>
+          </div>
+        </div>
+        <div v-if="workflow.error" role="alert" class="border border-red-200 bg-red-50 text-red-800 rounded-lg p-4 text-sm">{{ workflow.error }}</div>
+        <p v-if="workflow.notice" role="status" aria-live="polite" class="border border-sky-200 bg-sky-50 text-sky-900 rounded-lg p-4 text-sm">{{ workflow.notice }}</p>
+        <div v-if="workflow.notifications.length" class="bg-white border border-slate-200 rounded-lg p-4 text-sm"><h2 class="font-medium mb-2">Hasil survei untuk pengajuan Anda</h2><p v-for="item in workflow.notifications" :key="item.id">{{ item.woId }} ? {{ item.message }} ? {{ workflow.formatTime(item.at) }}</p></div>
+        <section v-if="!workflow.referenceMode && ((activeScreenCode === 'E02' && activeRoleKey === 'pengawas_k3') || (activeScreenCode === 'R02' && activeRoleKey === 'p2k3_k3l'))" class="rounded-xl border bg-white p-5 space-y-4">
+          <h2 class="font-medium">Formulir WIP 22 butir</h2>
+          <label class="block text-sm">Work Order
+            <select v-model="workflow.wipId" class="block border rounded-lg p-2 w-full"><option value="">Pilih WO</option><option v-for="wo in workflow.orders.filter(item=>item.executionRounds?.length)" :key="wo.id" :value="wo.id">{{ wo.id }} ? {{ wo.nama_wo }}</option></select>
+          </label>
+          <template v-if="workflow.wipOrder">
+            <p v-if="workflow.wipOrder.wipVersions?.length" class="text-sm">Versi {{ workflow.wipOrder.wipVersions.at(-1).version }} ? {{ workflow.statusLabel(workflow.wipOrder.wipVersions.at(-1).status) }} ? {{ workflow.wipOrder.wipVersions.at(-1).score ?? 'Belum dihitung' }}%</p>
+            <fieldset v-for="row in workflow.wipRows" :key="row.no" class="border rounded-lg p-3 grid gap-2 sm:grid-cols-[8rem_1fr]">
+              <legend class="text-sm px-1">{{ row.no }}. {{ row.text }}</legend>
+              <label class="text-sm">Jawaban<select v-model="row.answer" :disabled="activeRoleKey !== 'pengawas_k3' || workflow.wipOrder.wipVersions?.at(-1)?.status === 'submitted'" class="block border rounded p-2 w-full"><option value="">Pilih</option><option>Ya</option><option>Tidak</option><option>N/A</option></select></label>
+              <label class="text-sm">Catatan<input v-model="row.note" :disabled="activeRoleKey !== 'pengawas_k3' || workflow.wipOrder.wipVersions?.at(-1)?.status === 'submitted'" class="block border rounded p-2 w-full"></label>
+            </fieldset>
+            <div class="flex flex-wrap gap-3">
+              <button v-if="activeRoleKey === 'pengawas_k3' && workflow.wipOrder.wipVersions?.at(-1)?.status !== 'submitted'" class="border rounded-lg px-3 py-2" @click="workflow.saveWip('wip-save')">Simpan draf</button>
+              <button v-if="activeRoleKey === 'pengawas_k3' && workflow.wipOrder.wipVersions?.at(-1)?.status !== 'submitted'" class="bg-pln-blue text-white rounded-lg px-3 py-2" @click="workflow.saveWip('wip-submit')">Ajukan WIP</button>
+              <button v-if="activeRoleKey === 'p2k3_k3l' && workflow.wipOrder.wipVersions?.at(-1)?.status === 'submitted'" class="bg-pln-blue text-white rounded-lg px-3 py-2" @click="workflow.saveWip('wip-approve')">Sahkan versi WIP ini</button>
+            </div>
+          </template>
+        </section>
+        <p v-if="activeScreenCode==='R01' && !workflow.referenceMode" class="rounded-lg border bg-white p-3 text-sm">PDF BAPP menunggu persetujuan format dan pemetaan bidang pada K07.</p>
+        <bpmn-workspace v-if="['P01','P02','P03','P04','E01','E02','E03','R01','R03'].includes(activeScreenCode) && !workflow.referenceMode" :w="workflow"></bpmn-workspace>
+
 
         <!-- ============================================================== -->
+        <section v-if="activeScreenCode==='D01' && !workflow.referenceMode" class="space-y-5" aria-label="Dashboard kerja">
+          <div class="rounded-xl border bg-white p-5">
+            <h2 class="font-semibold">Perlu aksi saya</h2>
+            <div v-for="task in filteredMyActions.filter(item=>item.actionable!==false)" :key="task.id" class="mt-2">
+              <button type="button" data-work-task class="text-left underline text-pln-blue" @click="executeAction(task)">{{ task.wo.id }} / {{ task.title }}</button>
+            </div>
+            <button v-for="report in workflow.monthlyReports.filter(item=>workflow.monthlyOwner(item)===activeRoleKey && item.nodeId!=='Node_end_bulanan')" :key="report.id" type="button" class="block mt-2 underline text-pln-blue" @click="workflow.openMonthly(report)">{{ report.period }} / {{ workflow.monthlyTitle(report) }}</button>
+            <p v-if="!workflow.tasks.some(item=>item.actionable) && !workflow.monthlyReports.some(item=>workflow.monthlyOwner(item)===activeRoleKey && item.nodeId!=='Node_end_bulanan')" class="mt-2 text-sm text-slate-600">Belum ada tugas aktif.</p>
+          </div>
+          <div class="rounded-xl border bg-white p-5 space-y-4">
+            <div class="grid gap-3 sm:grid-cols-3" @input="workflow.dashboardPage=1" @change="workflow.dashboardPage=1">
+              <label class="text-sm">Cari WO<input v-model="workflow.dashboardFilter.search" type="search" class="block w-full border rounded-lg p-2"></label>
+              <label class="text-sm">Periode WIB<input v-model="workflow.dashboardFilter.period" type="month" class="block w-full border rounded-lg p-2"></label>
+              <label class="text-sm">Status<select v-model="workflow.dashboardFilter.status" class="block w-full border rounded-lg p-2"><option value="">Semua status</option><option v-for="status in workflow.dashboardStatuses" :key="status">{{status}}</option></select></label>
+            </div>
+            <p class="text-xs text-slate-600">Periode memakai waktu pengajuan untuk daftar kerja, dan waktu selesai operasional untuk kelompok selesai operasional.</p>
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <button v-for="[key,label] in [['all','WO dalam cakupan'],['tasks','WO perlu aksi'],['hold','WO terkendala'],['operational','WO selesai operasional']]" :key="key" type="button" :aria-pressed="workflow.dashboardFilter.category===key" @click="workflow.dashboardFilter.category=key;workflow.dashboardPage=1" class="border rounded-lg p-3 text-left aria-pressed:border-pln-blue">
+                <strong class="block text-xl">{{ workflow.dashboardCount(key) }}</strong><span class="text-sm">{{ label }}</span>
+              </button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm"><caption class="text-left py-2">{{workflow.dashboardRows().length}} WO sesuai filter</caption><thead class="bg-slate-50"><tr><th class="p-2">WO</th><th class="p-2">Status</th><th class="p-2">Selesai operasional (WIB)</th></tr></thead><tbody>
+              <tr v-for="wo in workflow.dashboardRows().slice((workflow.dashboardPage-1)*10,workflow.dashboardPage*10)" :key="wo.id" class="border-b"><td class="p-2"><button class="underline text-pln-blue text-left" @click="workflow.open(wo)">{{wo.id}} / {{wo.nama_wo}}</button></td><td class="p-2">{{wo.status}}</td><td class="p-2">{{wo.operational_completed_at ? workflow.formatTime(wo.operational_completed_at) : 'Menunggu'}}</td></tr>
+            </tbody></table></div>
+            <div class="flex items-center gap-3 text-sm"><button type="button" class="border rounded px-2 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage<=1" @click="workflow.dashboardPage--">Sebelumnya</button><span>Halaman {{workflow.dashboardPage}}</span><button type="button" class="border rounded px-2 py-1 disabled:opacity-50" :disabled="workflow.dashboardPage*10>=workflow.dashboardRows().length" @click="workflow.dashboardPage++">Berikutnya</button></div>
+          </div>
+        </section>
         <!-- SCREEN D01: DASHBOARD                                         -->
         <!-- ============================================================== -->
-        <div v-if="activeScreenCode === 'D01'" class="space-y-5">
+        <div v-if="activeScreenCode === 'D01' && workflow.referenceMode" class="space-y-5">
 
           <!-- Breadcrumb & Waktu Sistem -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
-            <div class="flex items-center space-x-2 text-xs text-slate-500">
-              <span class="font-black text-slate-800 text-sm">Dashboard Kontrol Panel</span>
-              <span>/</span>
-              <span>Ringkasan Eksekutif & Antrean Tugas</span>
+            <div class="text-sm text-slate-700">
+              Selamat Datang, <span class="font-bold text-slate-900">{{ currentUser.name }}</span>
             </div>
             <div class="inline-flex items-center space-x-1.5 text-xs text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg shadow-xs font-mono">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -445,9 +543,6 @@
                     <h2 class="text-lg font-black text-slate-900 tracking-tight flex items-center space-x-2">
                       <span>Daftar Pekerjaan & Antrean WO</span>
                     </h2>
-                    <div class="text-xs text-slate-500 mt-0.5">
-                      Menampilkan {{ displayedWorkOrders.length }} dari {{ workOrders.length }} Work Order Terpantau
-                    </div>
                   </div>
 
                   <!-- Mode Switcher Buttons (Tabel Data Aktif Secara Default) -->
@@ -633,7 +728,7 @@
                         class="px-1.5 py-0.5 rounded text-[9px] font-black tracking-wide"
                         :class="wo.kondisi_operasi === 'Padam' ? 'bg-red-100 text-red-800 border border-red-300' : 'bg-amber-100 text-amber-900 border border-amber-300'"
                       >
-                        {{ wo.kondisi_operasi === 'Padam' ? '🔴 PADAM' : '⚡ PDKB' }}
+                        {{ wo.kondisi_operasi === 'Padam' ? 'PADAM' : 'PDKB' }}
                       </span>
                       <span v-if="wo.working_permit_nomor" class="px-1.5 py-0.5 bg-blue-50 text-blue-800 border border-blue-200 rounded text-[9px] font-semibold">
                         WP Inspekta: Aktif
@@ -693,7 +788,7 @@
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
                   <div class="flex items-center space-x-1.5">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <h3 class="font-black text-xs text-slate-800 font-semibold">3. Lapangan (Live)</h3>
+                    <h3 class="font-black text-xs text-slate-800 font-semibold">3. Pelaksanaan &amp; On Hold</h3>
                   </div>
                   <span class="px-2 py-0.5 bg-emerald-600 text-white rounded-full font-bold text-[10px] shadow-xs">
                     {{ getKanbanWOs(['Ongoing', 'On Hold', 'To-be determined']).length }}
@@ -723,7 +818,7 @@
                       >
                         {{ wo.kondisi_operasi === 'Padam' ? 'Jaringan Padam' : 'Pekerjaan Bertegangan' }}
                       </span>
-                      <span class="text-[10px] font-mono text-slate-500">{{ wo.waktu_mulai_aktual ? 'Mulai: ' + wo.waktu_mulai_aktual.split(',')[1] : '' }}</span>
+                      <span class="text-[10px] font-mono text-slate-500">{{ wo.waktu_mulai_aktual ? 'Mulai: ' + workflow.formatTime(wo.waktu_mulai_aktual) : '' }}</span>
                     </div>
 
                     <!-- Card Body -->
@@ -1249,7 +1344,6 @@
       <aside class="w-full xl:w-[315px] shrink-0 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4 sticky top-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-amber-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
             <h3 class="font-extrabold text-base text-slate-900 tracking-tight">Aksi Prioritas {{ activeRoleInfo.title }}</h3>
           </div>
           <span class="w-6 h-6 rounded-full bg-red-500 text-white font-black text-xs flex items-center justify-center shadow-xs">
@@ -1264,20 +1358,15 @@
           <div class="text-[11px] text-slate-500">Tugas prioritas memerlukan putusan atau tinjauan Anda segera.</div>
         </div>
 
+        <p v-if="!filteredMyActions.length" class="text-xs text-slate-500 py-3">Tidak ada tugas aktif untuk role ini.</p>
         <!-- Action Tiles List (High-Contrast Buttons ala Reference 1) -->
         <div class="space-y-3 max-h-[680px] overflow-y-auto pr-1">
           <div 
             v-for="act in filteredMyActions" 
             :key="act.id" 
-            @click="executeAction(act)" 
-            class="p-4 rounded-xl border transition shadow-xs hover:shadow-md cursor-pointer space-y-1.5 group"
-            :class="{
-              'bg-amber-500 text-white border-amber-600 hover:bg-amber-600': act.wo_id === 'WO-003',
-              'bg-sky-900 text-white border-sky-800 hover:bg-sky-950': act.wo_id === 'WO-005',
-              'bg-purple-600 text-white border-purple-700 hover:bg-purple-700': act.wo_id === 'WO-011',
-              'bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700': act.wo_id === 'WO-012',
-              'bg-orange-500 text-white border-orange-600 hover:bg-orange-600': act.wo_id === 'WO-015'
-            }"
+            @click="executeAction(act)"
+            role="button" tabindex="0" @keydown.enter="executeAction(act)" @keydown.space.prevent="executeAction(act)"
+            class="p-4 rounded-xl border border-slate-200 transition shadow-xs hover:shadow-md cursor-pointer space-y-1.5 group bg-white text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-600"
           >
             <div class="flex items-center justify-between text-[11px] font-bold font-semibold opacity-90">
               <span>{{ act.wo_id }} &bull; {{ act.status }}</span>
@@ -1293,7 +1382,7 @@
 
           <!-- Red Emergency SWA Tile -->
           <div 
-            v-if="canRecordSWA"
+            v-if="canRecordSWA && workflow.referenceMode"
             @click="openSWAModal(null)" 
             class="p-4 rounded-xl bg-red-600 hover:bg-red-700 text-white border border-red-700 cursor-pointer shadow-sm hover:shadow-md transition flex items-center justify-between"
           >
@@ -1317,7 +1406,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN P01: DAFTAR & PENGAJUAN WO                             -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'P01'" class="space-y-6">
+      <div v-if="activeScreenCode === 'P01' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -1649,7 +1738,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN P02: PERSETUJUAN & PENUGASAN (DIREKSI)                 -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'P02'" class="space-y-6">
+      <div v-if="activeScreenCode === 'P02' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -1842,7 +1931,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN P03: PERSIAPAN & PENJADWALAN (PREPARATOR)              -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'P03'" class="space-y-6">
+      <div v-if="activeScreenCode === 'P03' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -1955,7 +2044,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN E01: PELAKSANAAN WO (PENGAWAS PEKERJAAN LAPANGAN)      -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'E01'" class="space-y-6">
+      <div v-if="activeScreenCode === 'E01' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -2013,7 +2102,7 @@
                 </div>
                 <div class="bg-white p-3 rounded border">
                   <span class="text-slate-500">Waktu Mulai Aktual:</span>
-                  <div class="font-bold text-slate-800 mt-0.5">{{ wo.waktu_mulai_aktual || 'Belum dimulai' }}</div>
+                  <div class="font-bold text-slate-800 mt-0.5">{{ wo.waktu_mulai_aktual ? workflow.formatTime(wo.waktu_mulai_aktual) : 'Belum dimulai' }}</div>
                   <div class="text-[11px] text-slate-500">Tercatat di server resmi</div>
                 </div>
                 <div class="bg-white p-3 rounded border">
@@ -2089,7 +2178,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN E02 & R02: WIP 22 BUTIR DIGITAL & K3 (K3 PLN & K3L)     -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'E02' || activeScreenCode === 'R02'" class="space-y-6">
+      <div v-if="workflow.referenceMode && ['E02','R02'].includes(activeScreenCode)" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-5 gap-3">
             <div>
@@ -2233,7 +2322,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN E03 & P04: OPERASI DISTRIBUSI (BEBAS TEGANGAN & AREA)  -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'E03' || activeScreenCode === 'P04'" class="space-y-6">
+      <div v-if="(activeScreenCode === 'E03' || activeScreenCode === 'P04') && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -2343,7 +2432,7 @@
       <!-- ============================================================== -->
       <!-- SCREEN R01: LAPORAN PENYELESAIAN WO & PENUTUPAN IZIN OBJEK (BAPP)-->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'R01'" class="space-y-6">
+      <div v-if="activeScreenCode === 'R01' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-5 gap-3">
             <div>
@@ -2690,7 +2779,7 @@
                         </div>
                         <div class="text-[11px] text-emerald-900 leading-tight">
                           Penandatangan: <strong>{{ wo.bagian_terkait_nama || 'Wahyu Pratama' }}</strong><br>
-                          <span class="text-[10px] text-emerald-700 font-mono">NIP-19860912-PLN &middot; {{ wo.tgl_tutup_objek || '13 Nov 2026, 14:15 WIB' }}</span>
+                          <span class="text-[10px] text-emerald-700 font-mono">NIP-19860912-PLN &middot; {{ wo.tgl_tutup_objek || 'Belum tercatat' }}</span>
                         </div>
                         <div class="flex items-center space-x-2 pt-1">
                           <button 
@@ -2732,7 +2821,8 @@
       <!-- ============================================================== -->
       <!-- SCREEN R03: PEMERIKSAAN & PENUTUPAN WO (CLOSED GATE)          -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'R03'" class="space-y-6">
+      <section v-if="activeScreenCode === 'R03' && !workflow.referenceMode" class="bg-white rounded-xl border p-5 space-y-3"><h2>Ringkasan WIP per WO</h2><p v-for="wo in workflow.orders.filter(item=>item.wipVersions?.length)" :key="wo.id">{{ wo.id }} ? {{ workflow.statusLabel(wo.wipVersions.at(-1).status) }} ? {{ wo.wipVersions.at(-1).score ?? 'Belum dihitung' }}%</p></section>
+      <div v-if="activeScreenCode === 'R03' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-5">
             <div>
@@ -2752,7 +2842,7 @@
                 <div>
                   <span class="font-mono font-bold text-pln-blue text-sm">{{ wo.id }}</span>
                   <h3 class="font-bold text-slate-900 text-base">{{ wo.nama_wo }}</h3>
-                  <div class="text-xs text-slate-500">Pengawas: {{ wo.pengawas_pekerjaan }} &middot; Tanggal Selesai: 13 Nov 2026</div>
+                  <div class="text-xs text-slate-500">Pengawas: {{ wo.pengawas_pekerjaan }} &middot; Tanggal selesai: {{ wo.operational_completed_at ? workflow.formatTime(wo.operational_completed_at) : 'Belum tercatat' }}</div>
                 </div>
                 <div>
                   <span class="px-2.5 py-1 rounded text-xs font-bold" :class="getStatusBadgeClass(wo.status)">{{ wo.status }}</span>
@@ -2848,7 +2938,8 @@
       <!-- ============================================================== -->
       <!-- SCREEN R04: LAPORAN OPERASI DISTRIBUSI & MANUVER JARINGAN      -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'R04'" class="space-y-6">
+      <section v-if="activeScreenCode === 'R04' && !workflow.referenceMode" class="bg-white rounded-xl border p-5 space-y-3"><h2>Penormalan per WO</h2><article v-for="wo in workflow.orders.filter(item=>item.normalizationRequests?.length)" :key="wo.id" class="border rounded-lg p-3"><p>{{ wo.id }} ? {{ wo.nama_wo }}</p><p>{{ wo.operational_completed_at ? workflow.formatTime(wo.operational_completed_at) : 'Menunggu selesai operasional' }}</p><button class="underline text-pln-blue" @click="workflow.open(wo)">Buka riwayat</button></article></section>
+      <div v-if="activeScreenCode === 'R04' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-5 gap-3">
             <div>
@@ -2934,7 +3025,39 @@
       <!-- ============================================================== -->
       <!-- SCREEN R05: REKAPITULASI EKSEKUTIF & EVALUASI KOMISI PDKB      -->
       <!-- ============================================================== -->
-      <div v-if="activeScreenCode === 'R05'" class="space-y-6">
+      <section v-if="activeScreenCode === 'R05' && !workflow.referenceMode" class="bg-white rounded-xl border p-5 space-y-4">
+        <h2 class="font-medium">Rekap bulanan PDKB</h2>
+        <form v-if="activeRoleKey==='preparator_pdkb'" @submit.prevent="workflow.monthlyAction('monthly-create')" class="flex flex-wrap items-end gap-3">
+          <label class="text-sm">Periode<input v-model="workflow.monthPeriod" type="month" required class="block border rounded-lg p-2"></label>
+          <button class="bg-pln-blue text-white rounded-lg px-3 py-2">Buat draf</button>
+        </form>
+        <p v-if="!workflow.monthlyReports.length" class="text-sm text-slate-600">Belum ada rekap pada unit ini.</p>
+        <details v-for="report in workflow.monthlyReports" :key="report.id" :open="workflow.monthlyOpened === report.id" class="border rounded-lg p-4">
+          <summary class="cursor-pointer font-medium">{{ report.period }} / {{ workflow.monthlyTitle(report) }}</summary>
+          <div v-for="version in report.versions.slice().reverse()" :key="version.number" class="mt-4 border rounded-lg p-3 text-sm">
+            <p class="font-medium">Versi {{ version.number }} / {{ version.snapshot.length }} WO / {{ workflow.statusLabel(version.status) }}</p>
+            <p v-if="version.note">{{ version.note }}</p>
+            <ul class="space-y-1 my-2"><li v-for="wo in version.snapshot" :key="wo.woId">{{ wo.woId }} / {{ wo.name }} / {{ workflow.formatTime(wo.operationalCompletedAt) }}</li></ul>
+            <button type="button" class="underline text-pln-blue" @click="workflow.downloadMonthly(report,version)">Unduh CSV versi {{version.number}}</button>
+            <ul class="mt-2"><li v-for="(entry,index) in version.distribution || []" :key="index">{{ entry.actorName }} / {{ entry.role }} / {{ entry.recipientRole }} / {{ workflow.formatTime(entry.at) }}</li></ul>
+            <p v-for="decision in version.decisions" :key="decision.at+decision.role">{{ decision.actorName }} / {{ decision.action==='monthly-return' ? 'Dikembalikan' : 'Disetujui' }} / {{ decision.note }}</p>
+          </div>
+          <p v-if="report.nodeId==='Node_end_bulanan'" class="mt-3 text-sm">Laporan bulanan selesai. Penerimaan Pusat tercatat.</p>
+          <div v-else-if="workflow.distributionAction(report)" class="mt-3">
+            <p v-if="report.nodeId==='Node_kirim_laporan_bulanan'" class="text-sm mb-2">Versi final siap untuk distribusi.</p>
+            <button v-if="workflow.monthlyOwner(report)===activeRoleKey" class="bg-pln-blue text-white rounded-lg px-3 py-2" @click="workflow.monthlyAction(workflow.distributionAction(report)[0],report)">{{ workflow.distributionAction(report)[1] }}</button>
+          </div>
+          <div v-else-if="workflow.monthlyOwner(report)===activeRoleKey" class="mt-3 space-y-2">
+            <label class="block text-sm">Catatan<textarea v-model="workflow.monthNotes[report.id]" class="block border rounded-lg p-2 w-full"></textarea></label>
+            <button v-if="activeRoleKey==='preparator_pdkb'" class="bg-pln-blue text-white rounded-lg px-3 py-2" @click="workflow.monthlyAction('monthly-submit',report)">Susun snapshot dan ajukan</button>
+            <template v-else>
+              <button class="bg-pln-blue text-white rounded-lg px-3 py-2" @click="workflow.monthlyAction('monthly-approve',report)">Setujui versi rekap</button>
+              <button class="border rounded-lg px-3 py-2" @click="workflow.monthlyAction('monthly-return',report)">Kembalikan ke Preparator</button>
+            </template>
+          </div>
+        </details>
+      </section>
+      <div v-if="activeScreenCode === 'R05' && workflow.referenceMode" class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-5 gap-3">
             <div>
@@ -3163,7 +3286,7 @@
       <!-- ============================================================== -->
       <!-- FALLBACK: LAYAR SEDANG DISIAPKAN ATAU KODE TIDAK DIKENAL       -->
       <!-- ============================================================== -->
-      <div v-else class="bg-white rounded-xl shadow-sm border border-slate-200 p-10 text-center space-y-4">
+      <div v-if="!Object.values(menuScreensMap).flat().some(screen => screen.code === activeScreenCode)" class="bg-white rounded-xl shadow-sm border border-slate-200 p-10 text-center space-y-4">
         <div class="w-16 h-16 bg-blue-50 text-pln-blue rounded-full flex items-center justify-center mx-auto text-xl font-bold font-mono">
           {{ activeScreenCode }}
         </div>
@@ -3450,7 +3573,7 @@
                 <span>&bull;</span>
                 <span class="text-emerald-400 font-semibold flex items-center">
                   <svg class="w-3 h-3 mr-0.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                  Tervalidasi PDKB-TM UID Yogyakarta
+                  {{ selectedWO?.processVersion ? 'Pratinjau berdasarkan rekaman WO demo' : 'Tervalidasi PDKB-TM UID Yogyakarta' }}
                 </span>
               </p>
             </div>
@@ -4228,7 +4351,7 @@
                     <div class="grid grid-cols-3 gap-2">
                       <span class="text-slate-500 font-semibold">Pembatas Bersifat Setempat:</span>
                       <span class="col-span-2 text-slate-700 leading-snug">
-                        {{ isTemplateBlankMode ? '....................................................................................' : (!activeDocData.isSp2bIssued ? '(Menunggu Penetapan Pembatas Setempat Tahap C.4 oleh Supervisor PDKB & Manajer Area)' : 'Pekerjaan hanya boleh dilaksanakan pada saat cuaca cerah/berawan (tidak hujan/petir), kelembaban < 85%, kecepatan angin < 30 km/jam, dan koordinasi radio HT aktif dengan Piket Pengatur SOK.') }}
+                        {{ isTemplateBlankMode ? '....................................................................................' : selectedWO?.processVersion ? activeDocData.sp2b_limits : (!activeDocData.isSp2bIssued ? '(Menunggu Penetapan Pembatas Setempat Tahap C.4 oleh Supervisor PDKB & Manajer Area)' : 'Pekerjaan hanya boleh dilaksanakan pada saat cuaca cerah/berawan (tidak hujan/petir), kelembaban < 85%, kecepatan angin < 30 km/jam, dan koordinasi radio HT aktif dengan Piket Pengatur SOK.') }}
                       </span>
                     </div>
                   </div>
@@ -4237,13 +4360,14 @@
                 <!-- Tanda Tangan SP2B -->
                 <div class="pt-6 flex justify-between items-end border-t border-slate-200">
                   <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center space-x-2">
-                    <div v-if="activeDocData.isSp2bIssued" class="w-10 h-10 bg-slate-900 text-white rounded flex items-center justify-center font-mono font-black text-xs">PLN QR</div>
+                    <div v-if="activeDocData.isSp2bIssued" class="w-10 h-10 bg-slate-900 text-white rounded flex items-center justify-center font-mono font-black text-xs">{{ selectedWO?.processVersion ? 'DEMO' : 'PLN QR' }}</div>
                     <div v-else class="w-10 h-10 bg-amber-100 text-amber-800 border border-amber-300 rounded flex items-center justify-center font-mono font-bold text-[9px] text-center">DRAFT</div>
                     <div class="text-[10px] text-slate-500 leading-tight">
-                      <div class="font-bold text-slate-700">TTE Pengesahan SP2B Digital</div>
-                      <div v-if="activeDocData.isSp2bIssued">ID: SP2B-PDKB-2026-YGY-09</div>
+                      <div class="font-bold text-slate-700">{{ selectedWO?.processVersion ? 'Rekam persetujuan SP2B demo' : 'TTE Pengesahan SP2B Digital' }}</div>
+                      <div v-if="activeDocData.isSp2bIssued">{{ selectedWO?.processVersion ? activeDocData.sp2b_version_id : 'ID: SP2B-PDKB-2026-YGY-09' }}</div>
                       <div v-else class="text-amber-700 font-mono italic">(Menunggu Pengesahan Tahap C.4)</div>
-                      <div v-if="activeDocData.isSp2bIssued" class="text-emerald-600 font-semibold">Tervalidasi: {{ activeDocData.tanggal }}</div>
+                      <div v-if="activeDocData.isSp2bIssued" class="text-emerald-600 font-semibold">{{ selectedWO?.processVersion ? 'Terbit pada '+activeDocData.letter_issued_at : 'Tervalidasi: '+activeDocData.tanggal }}</div>
+                      <div v-if="selectedWO?.processVersion">Diperiksa Supervisor · {{ activeDocData.tl_pdkb }}</div>
                       <div v-else class="text-slate-400">Status: Belum Terbit</div>
                     </div>
                   </div>
@@ -4265,7 +4389,7 @@
                 <div v-if="!activeDocData.isSp2bIssued && !isTemplateBlankMode" class="bg-amber-50 border border-amber-300 text-amber-900 rounded-lg p-3 text-xs flex items-center space-x-2.5">
                   <span class="text-base shrink-0">⚠️</span>
                   <div class="leading-relaxed">
-                    <strong>SUSUNAN TIM BELUM DITETAPKAN:</strong> Daftar 6 personil hotline bersertifikat kompetensi aktif ditetapkan oleh Preparator PDKB (Lane 06) dan diverifikasi oleh Supervisor PDKB (Lane 05) pada BPMN Tahap C.2.
+                    <strong>SUSUNAN TIM MENUNGGU SP2B.</strong> Data personel berasal dari Surat Kewenangan yang telah diperiksa pada tahap C.3 dan ditetapkan dalam versi SP2B yang diterbitkan.
                   </div>
                 </div>
 
@@ -4292,7 +4416,7 @@
                         <th class="py-2 px-3 border-r border-slate-700 text-left">Nama Pegawai &amp; NIP</th>
                         <th class="py-2 px-3 border-r border-slate-700 text-left">Tugas &amp; Tanggung Jawab</th>
                         <th class="py-2 px-3 border-r border-slate-700 text-left">No. Sertifikat Kompetensi</th>
-                        <th class="py-2 px-3 text-center w-28">Tanda Tangan</th>
+                        <th class="py-2 px-3 text-center w-28">{{ selectedWO?.processVersion ? 'Status kewenangan' : 'Tanda Tangan' }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -4300,7 +4424,7 @@
                         <td class="py-2 px-2 border-r border-slate-300 text-center font-mono font-bold">{{ c.no }}</td>
                         <td class="py-2 px-3 border-r border-slate-300">
                           <div class="font-bold text-slate-900">{{ isTemplateBlankMode ? '................................' : c.nama }}</div>
-                          <div class="text-[10px] text-slate-500 font-mono">{{ (isTemplateBlankMode || c.nip === '-') ? '' : ('NIP. ' + c.nip) }}</div>
+                          <div class="text-[10px] text-slate-500 font-mono">{{ (isTemplateBlankMode || c.nip === '-') ? '' : selectedWO?.processVersion ? c.nip : ('NIP. ' + c.nip) }}</div>
                         </td>
                         <td class="py-2 px-3 border-r border-slate-300">
                           <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold"
@@ -4322,7 +4446,7 @@
                 </div>
 
                 <div class="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t border-slate-200">
-                  <span>Metode Otorisasi: <strong>METODE SENTUH LANGSUNG</strong></span>
+                  <span>Metode Otorisasi: <strong>{{ selectedWO?.processVersion ? activeDocData.metode : 'METODE SENTUH LANGSUNG' }}</strong></span>
                   <span>Unit PDKB: <strong>UP3 Yogyakarta &amp; Wonosari</strong></span>
                 </div>
               </div>
@@ -4369,13 +4493,14 @@
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-slate-600 font-semibold">Masa Berlaku Kewenangan:</span>
-                      <strong class="text-slate-900">{{ isTemplateBlankMode ? '................................' : (activeDocData.isSp3bIssued ? '1 (Satu) Hari Kerja Operasional' : '(Menunggu Penerbitan Tahap C.4)') }}</strong>
+                      <strong class="text-slate-900">{{ isTemplateBlankMode ? '................................' : selectedWO?.processVersion ? 'Rencana tanggal '+activeDocData.plan_date : (activeDocData.isSp3bIssued ? '1 (Satu) Hari Kerja Operasional' : '(Menunggu Penerbitan Tahap C.4)') }}</strong>
                     </div>
                   </div>
                 </div>
 
                 <!-- Tanda Tangan 4 Pihak -->
-                <div class="pt-4">
+                <div v-if="selectedWO?.processVersion" class="grid grid-cols-2 gap-4 text-xs border border-slate-300 rounded-lg p-4"><div v-for="decision in activeDocData.letter_signatures" :key="decision.id"><p>{{ decision.role.replaceAll('_',' ') }}</p><p class="mt-3">{{ decision.actorName }}</p><p v-if="decision.at">{{ workflow.formatTime(decision.at) }}</p><p>Persetujuan demo</p></div></div>
+                <div v-else class="pt-4">
                   <div class="text-center font-bold text-xs text-slate-700 mb-2">PENGESAHAN PENGAWASAN (SP3B)</div>
                   <div class="grid grid-cols-4 gap-2 border border-slate-300 rounded-lg p-3 text-center text-xs bg-slate-50">
                     <div class="border-r border-slate-200 pr-2">
@@ -4410,6 +4535,7 @@
               <!-- TEMPLATE 7: DOC-07 - SOP PDKB-TM NO. 06 (TAILGATE SESSION) -->
               <!-- ============================================================== -->
               <div v-else-if="previewingDoc && previewingDoc.kode === 'DOC-07'" class="space-y-5">
+                <template v-if="!selectedWO?.processVersion || isTemplateBlankMode">
                 <!-- Banner Penjelasan Tahap Dokumen -->
                 <div v-if="!activeDocData.isExecutionStarted && !isTemplateBlankMode" class="bg-amber-50 border border-amber-300 text-amber-900 rounded-lg p-3 text-xs flex items-center space-x-2.5">
                   <span class="text-base shrink-0">⚠️</span>
@@ -4457,6 +4583,17 @@
                   <div class="text-slate-600">Pengawas K3: <strong class="underline">{{ activeDocData.tailgate_penugasan.pengawas_k3 }}</strong></div>
                   <div class="text-slate-600">Pengawas Pekerjaan: <strong class="underline">{{ activeDocData.tailgate_penugasan.pengawas_pekerjaan }}</strong></div>
                 </div>
+
+                </template>
+                <template v-else>
+                  <h2 class="text-center font-bold text-base">Job briefing dan safety briefing PDKB</h2>
+                  <p class="text-xs text-slate-500">{{ selectedWO.id }} &middot; {{ selectedWO.nama_wo }}</p>
+                  <div v-for="record in [activeDocData.job_briefing,activeDocData.safety_briefing].filter(Boolean)" :key="record.id" class="border border-slate-300 rounded-lg p-4 text-sm space-y-2">
+                    <h3 class="font-medium">{{ workflow.nodeTitle(record.nodeId) }}</h3><p>{{ record.actorName || record.actorId }} &middot; {{ workflow.formatTime(record.at) }}</p>
+                    <template v-for="(value,key) in record.data" :key="key"><p v-if="!['documentVersionId','requestId'].includes(key)" class="whitespace-pre-wrap">{{ workflow.readinessLabel(key) }} &middot; {{ typeof value === 'boolean' ? (value ? 'Memenuhi' : 'Belum memenuhi') : value }}</p></template>
+                  </div>
+                  <p v-if="!activeDocData.job_briefing" class="text-sm">Job briefing belum dicatat.</p><p v-if="!activeDocData.safety_briefing" class="text-sm">Safety briefing belum dicatat.</p>
+                </template>
               </div>
 
               <!-- ============================================================== -->
@@ -4467,18 +4604,22 @@
                 <div v-if="!activeDocData.isJsaCompleted && !isTemplateBlankMode" class="bg-amber-50 border border-amber-300 text-amber-900 rounded-lg p-3 text-xs flex items-center space-x-2.5">
                   <span class="text-base shrink-0">⚠️</span>
                   <div class="leading-relaxed">
-                    <strong>JSA BELUM DISUSUN:</strong> Job Safety Analysis (JSA) disusun bersama oleh Preparator PDKB (Lane 06) dan Kepala Regu (Lane 11), kemudian disahkan oleh Pejabat K3L (Lane 07) pada BPMN Tahap C.1.
+                    <strong>JSA MENUNGGU PERSETUJUAN.</strong> Preparator menyusun dan mengajukan JSA, P2K3/K3L memeriksa, kemudian Asman Jaringan menyetujui versi yang sama pada tahap C.1.
                   </div>
                 </div>
 
                 <div class="text-center space-y-1">
-                  <h3 class="font-black text-sm uppercase tracking-wide text-slate-900">JOB SAFETY ANALYSIS (JSA) &amp; HIRARC K3</h3>
+                  <h3 class="font-black text-sm uppercase tracking-wide text-slate-900">JOB SAFETY ANALYSIS (JSA)</h3>
                   <h2 class="font-extrabold text-base underline text-slate-900 uppercase">ANALISIS KESELAMATAN KERJA PDKB-TM 20kV</h2>
                   <div class="text-xs font-mono font-bold text-slate-700">Pekerjaan: {{ activeDocData.nama_wo }} &middot; Lokasi: {{ activeDocData.lokasi }}</div>
                 </div>
 
                 <!-- Bagian B: Checklist APD & Perlengkapan K3 -->
-                <div>
+                <div v-if="selectedWO?.processVersion" class="border border-slate-300 p-3 rounded-lg text-xs space-y-2">
+                  <p>Versi JSA · {{ activeDocData.jsa_version || 'Belum diajukan' }} · {{ activeDocData.jsa_status }}</p>
+                  <p>Penanggung jawab pengendalian · {{ activeDocData.jsa_responsible }}</p>
+                </div>
+                <div v-else>
                   <div class="font-bold text-xs bg-slate-800 text-white px-3 py-1.5 rounded-t">CHECKLIST ALAT PELINDUNG DIRI (APD) &amp; KESELAMATAN DARURAT</div>
                   <div class="grid grid-cols-3 gap-2 border border-slate-300 p-3 rounded-b bg-slate-50 text-[11px]">
                     <div class="flex items-center space-x-2">
@@ -4544,7 +4685,12 @@
                 </div>
 
                 <!-- Pengesahan JSA -->
-                <div class="grid grid-cols-4 gap-2 border border-slate-300 rounded-lg p-2.5 text-center text-xs bg-slate-50">
+                <div v-if="selectedWO?.processVersion" class="grid grid-cols-3 gap-2 border border-slate-300 rounded-lg p-3 text-center text-xs bg-slate-50">
+                  <div><p>Disusun Preparator</p><p class="mt-4">{{ activeDocData.jsa_author }}</p></div>
+                  <div><p>Diperiksa P2K3/K3L</p><p class="mt-4">{{ activeDocData.jsa_reviewer }}</p></div>
+                  <div><p>Disetujui Asman</p><p class="mt-4">{{ activeDocData.jsa_approver }}</p></div>
+                </div>
+                <div v-else class="grid grid-cols-4 gap-2 border border-slate-300 rounded-lg p-2.5 text-center text-xs bg-slate-50">
                   <div>
                     <div class="text-[10px] text-slate-500">Disusun Oleh:</div>
                     <div class="font-bold text-slate-800">Kepala Regu PDKB</div>
@@ -5105,11 +5251,21 @@
 
   </div>
 
+  <script src="app/preparation-graph.js"></script>
+  <script src="app/field-preparation.js"></script>
+  <script src="app/execution.js"></script>
+  <script src="app/closure.js"></script>
+  <script src="app/monthly.js"></script>
+  <script src="app/reporting.js"></script>
+  <script src="app/preparation.js"></script>
+  <script src="app/workflow.js"></script>
+  <script src="app/workspace.js"></script>
   <!-- Vue 3 Interactive Application Logic -->
   <script>
     const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
     const appInstance = createApp({
+      components: { BpmnWorkspace: IwomsWorkspace.component },
       setup() {
         // Active role key in topbar (Default Direksi to match reference screenshot)
         const activeRoleKey = ref('tl_har');
@@ -5119,13 +5275,7 @@
         let clockInterval = null;
 
         function formatDateTime(d) {
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          const hours = String(d.getHours()).padStart(2, '0');
-          const minutes = String(d.getMinutes()).padStart(2, '0');
-          const seconds = String(d.getSeconds()).padStart(2, '0');
-          return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds + ' WIB';
+          return new Intl.DateTimeFormat('id-ID', {timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'medium'}).format(d) + ' WIB';
         }
 
         const currentSystemTimeFormatted = computed(() => {
@@ -5365,12 +5515,12 @@
           'DOC-08': {
             kode: 'DOC-08',
             nama: 'Job Safety Analysis (JSA)',
-            pengisi: 'Preparator & Kepala Regu (Lane 06, 11)',
-            pengesah: 'Pejabat K3L (Lane 07) & Asman Jaringan',
+            pengisi: 'Preparator PDKB (Lane 06)',
+            pengesah: 'P2K3/K3L memeriksa, Asman Jaringan menyetujui',
             fungsi: 'Menetapkan bahaya sengatan 20kV, APD wajib, dan prosedur mitigasi.',
-            lane_pengisi: 'Lane 06 & 11',
+            lane_pengisi: 'Lane 06',
             lane_pengesah: 'Lane 04 & 07',
-            tahap: 'Tahap B & C (K3L)',
+            tahap: 'Tahap C.1 (JSA)',
             format: 'PDF/XLS',
             wajib: true,
             pdf_page: 7
@@ -5379,10 +5529,10 @@
             kode: 'DOC-05',
             nama: 'SOP 04.2: Susunan Tim Hotline',
             pengisi: 'Preparator PDKB (Lane 06)',
-            pengesah: 'Seluruh 6 Personil Hotline (Lane 10-12)',
-            fungsi: 'Daftar 6 personil bersertifikat kompetensi aktif yang boleh naik menyentuh kawat 20kV.',
+            pengesah: 'Mengikuti pengesahan SP2B oleh Supervisor dan Manajer',
+            fungsi: 'Susunan personel dan Surat Kewenangan yang menjadi bagian versi SP2B.',
             lane_pengisi: 'Lane 06',
-            lane_pengesah: 'Lane 10-12',
+            lane_pengesah: 'Lane 05 & 09',
             tahap: 'Tahap C (Penugasan)',
             format: 'PDF',
             wajib: true,
@@ -5393,7 +5543,7 @@
             nama: 'SOP 04.1: SP2B (Perintah Pelaksanaan)',
             pengisi: 'Preparator (Draft) & Supervisor PDKB',
             pengesah: 'Manajer Area / Kepala Operasi (Lane 09)',
-            fungsi: 'Surat Kuasa Hukum Tertinggi: Izin legal menyentuh instalasi listrik hidup 20kV.',
+            fungsi: 'Surat perintah pelaksanaan dengan ruang lingkup, batas pekerjaan dan tim yang disahkan.',
             lane_pengisi: 'Lane 05-06',
             lane_pengesah: 'Lane 09',
             tahap: 'Tahap C (Izin Operasi)',
@@ -7087,307 +7237,6 @@ function bukaPratinjauDokumen(doc) {
         });
 
         // Dynamic Actions Queue based on Active Role (NAV-01)
-        const filteredMyActions = computed(() => {
-          const list = [];
-          const role = activeRoleKey.value;
-
-          workOrders.value.forEach(wo => {
-            // Pengusul: needs to revise Rejected or complete Draft
-            if (['tl_op', 'tl_har', 'tl_konstruksi', 'superadmin'].includes(role)) {
-              if (wo.status === 'Draft') {
-                list.push({
-                  id: 'act-pengusul-draft-' + wo.id,
-                  wo_id: wo.id,
-                  status: 'Draft',
-                  tag: 'Konsep',
-                  title: wo.nama_wo || wo.nama_pekerjaan,
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Bisa Diedit Kapan Saja',
-                  urgency: 'low',
-                  slaBadge: 'Draft Belum Diajukan',
-                  badgeClass: 'bg-slate-200 text-slate-800',
-                  actionButtonText: 'Lanjutkan Pengajuan WO',
-                  actionIcon: '',
-                  targetScreen: 'P01',
-                  wo: wo
-                });
-              }
-              if (wo.status === 'Rejected') {
-                list.push({
-                  id: 'act-pengusul-rej-' + wo.id,
-                  wo_id: wo.id,
-                  title: 'Perbaikan WO Ditolak (Rejected)',
-                  description: 'Direksi meminta perbaikan jadwal & kelengkapan.',
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Segera (SLA Pengusul)',
-                  urgency: 'high',
-                  slaBadge: 'Perlu Revisi',
-                  badgeClass: 'bg-red-100 text-red-800',
-                  actionButtonText: 'Perbaiki & Ajukan Ulang',
-                  targetScreen: 'P01',
-                  wo: wo
-                });
-              }
-            }
-
-            // Direksi: exactly 5 tasks matching user reference
-            if (['asman_jaringan', 'supervisor_pdkb', 'manajer_area', 'superadmin'].includes(role)) {
-              if (wo.id === 'WO-003') {
-                list.push({
-                  id: 'act-dir-003',
-                  wo_id: 'WO-003',
-                  status: 'Submitted',
-                  tag: 'Persyaratan',
-                  title: 'Penggantian Trafo Distribusi Sisipan 160 kVA Lokasi Kalasan',
-                  location: 'Penyulang Kalasan',
-                  operation: wo.kondisi_operasi,
-                  deadline: '4 Jam Kerja (SLA Direksi)',
-                  urgency: 'high',
-                  slaBadge: 'Menunggu Approval',
-                  badgeClass: 'bg-indigo-100 text-indigo-800',
-                  actionButtonText: 'Approval / Reject Pengajuan WO',
-                  actionIcon: '',
-                  targetScreen: 'P02',
-                  wo: wo
-                });
-              } else if (wo.id === 'WO-005') {
-                list.push({
-                  id: 'act-dir-005',
-                  wo_id: 'WO-005',
-                  status: 'Scheduled',
-                  tag: 'Persyaratan',
-                  title: 'Pemeliharaan Kubikel & Trafo Gardu Induk Kentungan',
-                  location: null,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Usulan Jadwal Masuk',
-                  urgency: 'medium',
-                  slaBadge: 'Jadwal Diajukan',
-                  badgeClass: 'bg-amber-100 text-amber-800',
-                  actionButtonText: 'Putuskan Usulan Perubahan Jadwal',
-                  actionIcon: '',
-                  targetScreen: 'P02',
-                  wo: wo
-                });
-              } else if (wo.id === 'WO-011') {
-                list.push({
-                  id: 'act-dir-011',
-                  wo_id: 'WO-011',
-                  status: 'Under Review',
-                  tag: 'Laporan',
-                  title: 'Uprating Konduktor A3CS Penyulang Sedayu',
-                  location: null,
-                  operation: wo.kondisi_operasi,
-                  deadline: '4 Jam Kerja',
-                  urgency: 'medium',
-                  slaBadge: 'Laporan Akhir',
-                  badgeClass: 'bg-purple-100 text-purple-800',
-                  actionButtonText: 'Periksa & Terima Laporan Penyelesaian',
-                  actionIcon: '',
-                  targetScreen: 'R03',
-                  wo: wo
-                });
-              } else if (wo.id === 'WO-012') {
-                list.push({
-                  id: 'act-dir-012',
-                  wo_id: 'WO-012',
-                  status: 'Under Review',
-                  tag: 'Laporan',
-                  title: 'Rekonfigurasi Jumperan Bertegangan Penyulang Wates',
-                  location: null,
-                  operation: wo.kondisi_operasi,
-                  deadline: '4 Jam Kerja',
-                  urgency: 'high',
-                  slaBadge: 'Siap Ditutup',
-                  badgeClass: 'bg-emerald-100 text-emerald-800',
-                  actionButtonText: 'Periksa 3 Syarat & Tutup WO (Closed)',
-                  actionIcon: '',
-                  targetScreen: 'R03',
-                  wo: wo
-                });
-              } else if (wo.id === 'WO-015') {
-                list.push({
-                  id: 'act-dir-015',
-                  wo_id: 'WO-015',
-                  status: 'Assignment Review',
-                  tag: 'Ringkasan',
-                  title: 'Pemeliharaan Gardu Distribusi & Penggantian Kubikel Pakem',
-                  location: null,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Perlu Penetapan Ulang',
-                  urgency: 'high',
-                  slaBadge: 'Kembali ke Direksi',
-                  badgeClass: 'bg-orange-100 text-orange-800',
-                  actionButtonText: 'Tetapkan Ulang Penugasan/Katalog (Assignment Review)',
-                  actionIcon: '',
-                  targetScreen: 'P02',
-                  wo: wo
-                });
-              }
-            } else if (role === 'superadmin') {
-              if (wo.status === 'Submitted') {
-                list.push({
-                  id: 'act-dir-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: wo.tag || 'Persyaratan',
-                  title: wo.nama_wo,
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: '4 Jam Kerja',
-                  urgency: 'high',
-                  slaBadge: 'Approval Direksi',
-                  badgeClass: 'bg-indigo-100 text-indigo-800',
-                  actionButtonText: 'Tinjau & Putuskan',
-                  actionIcon: '👤',
-                  targetScreen: 'P02',
-                  wo: wo
-                });
-              }
-              if (wo.status === 'Under Review' || wo.status === 'Completed') {
-                list.push({
-                  id: 'act-dir-close-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: wo.tag || 'Laporan',
-                  title: wo.nama_wo,
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: '4 Jam Kerja',
-                  urgency: 'medium',
-                  slaBadge: 'Penutupan WO',
-                  badgeClass: 'bg-purple-100 text-purple-800',
-                  actionButtonText: 'Periksa & Tutup',
-                  actionIcon: '🗄️',
-                  targetScreen: 'R03',
-                  wo: wo
-                });
-              }
-            }
-
-            // Preparator: needs to prepare Approved WOs
-            if ((role === 'preparator_pln' && wo.penugasan === 'Internal PLN') || 
-                (role === 'preparator_mitra' && wo.penugasan === 'Mitra Kerja') || 
-                role === 'superadmin') {
-              if (wo.status === 'Approved') {
-                list.push({
-                  id: 'act-prep-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: 'Persyaratan',
-                  title: 'Lengkapi WP Inspekta & Tetapkan Jadwal',
-                  description: 'WO telah disetujui Direksi. Siapkan Working Permit & Roster.',
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: '8 Jam Kerja (SLA Preparator)',
-                  urgency: 'high',
-                  slaBadge: 'Perlu Persiapan',
-                  badgeClass: 'bg-cyan-100 text-cyan-800',
-                  actionButtonText: 'Buka Persiapan',
-                  actionIcon: '',
-                  targetScreen: 'P03',
-                  wo: wo
-                });
-              }
-            }
-
-            // Pengawas Lapangan: Ready to Start
-            if ((role === 'pengawas_pekerjaan_pln' && wo.penugasan === 'Internal PLN') || 
-                (role === 'pengawas_pekerjaan_mitra' && wo.penugasan === 'Mitra Kerja') || 
-                role === 'superadmin') {
-              if (wo.status === 'Ready to Start') {
-                list.push({
-                  id: 'act-exec-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: 'Persyaratan',
-                  title: 'Pekerjaan Siap Dimulai (Ready to Start)',
-                  description: 'Seluruh syarat K3 & izin lengkap. Silakan tekan Mulai saat jam tiba.',
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: '15 Menit sebelum jadwal',
-                  urgency: 'high',
-                  slaBadge: 'Siap Eksekusi',
-                  badgeClass: 'bg-emerald-100 text-emerald-800',
-                  actionButtonText: 'Mulai Lapangan',
-                  actionIcon: '▶️',
-                  targetScreen: 'E01',
-                  wo: wo
-                });
-              }
-              if (wo.status === 'Ongoing') {
-                list.push({
-                  id: 'act-on-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: 'Ringkasan',
-                  title: 'Pelaksanaan Lapangan Sedang Berjalan',
-                  description: 'Awasi pekerjaan regu & update progres fisik.',
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Hari Ini',
-                  urgency: 'medium',
-                  slaBadge: 'Ongoing',
-                  badgeClass: 'bg-emerald-100 text-emerald-800',
-                  actionButtonText: 'Kelola Progres',
-                  actionIcon: '',
-                  targetScreen: 'E01',
-                  wo: wo
-                });
-              }
-            }
-
-            // K3L: Pengesahan WIP
-            if (['p2k3_k3l', 'superadmin'].includes(role)) {
-              list.push({
-                id: 'act-k3l-' + wo.id,
-                wo_id: wo.id,
-                status: wo.status,
-                tag: 'Laporan',
-                title: 'Pengesahan Formulir WIP 22 Butir',
-                description: 'Penilaian K3 lapangan telah diajukan Pengawas K3 PLN.',
-                location: wo.lokasi,
-                operation: wo.kondisi_operasi,
-                deadline: '4 Jam Kerja',
-                urgency: 'medium',
-                slaBadge: 'Telaah WIP',
-                badgeClass: 'bg-red-100 text-red-800',
-                actionButtonText: 'Sahkan WIP',
-                actionIcon: '',
-                targetScreen: 'R02',
-                wo: wo
-              });
-            }
-
-            // Operasi Distribusi: Bebas Tegangan
-            if (['piket_area', 'piket_apd', 'petugas_gi', 'superadmin'].includes(role)) {
-              if (wo.kondisi_operasi === 'Padam' && !wo.konfirmasi_bebas_tegangan) {
-                list.push({
-                  id: 'act-ops-' + wo.id,
-                  wo_id: wo.id,
-                  status: wo.status,
-                  tag: 'Persyaratan',
-                  title: 'Konfirmasi Aktual Bebas Tegangan',
-                  description: 'WO Padam memerlukan konfirmasi pelepasan beban & LOTO sebelum Mulai.',
-                  location: wo.lokasi,
-                  operation: wo.kondisi_operasi,
-                  deadline: 'Waktu Berjalan',
-                  urgency: 'high',
-                  slaBadge: 'Bebas Tegangan',
-                  badgeClass: 'bg-red-100 text-red-800',
-                  actionButtonText: 'Konfirmasi',
-                  actionIcon: '',
-                  targetScreen: 'E03',
-                  wo: wo
-                });
-              }
-            }
-          });
-
-          return list;
-        });
-
         // Filtered Work Orders for Table, Kanban & Calendar
         const displayedWorkOrders = computed(() => {
           return workOrders.value.filter(w => {
@@ -7398,7 +7247,10 @@ function bukaPratinjauDokumen(doc) {
         });
 
         function getKanbanWOs(statuses) {
-          return displayedWorkOrders.value.filter(w => statuses.includes(w.status));
+          const buckets = { 'JSA Preparation':'Approved', 'Survey':'Approved', 'Feasibility Review':'Approved', 'Planning':'Approved',
+            'Document Preparation':'Approved', 'Field Readiness':'Approved', 'SOK Coordination':'Approved', 'Initial Condition Review':'Approved',
+            'Hold Review':'Approved', 'Proposal Stopped':'Canceled', 'Survey Stopped':'Canceled' };
+          return displayedWorkOrders.value.filter(w => statuses.includes(w.status) || statuses.includes(w.stage === 'notify' ? 'Approved' : buckets[w.status]));
         }
 
         // Formula Score Calculation for WIP: Ya / (Ya + Tidak) * 100%
@@ -7850,25 +7702,17 @@ function bukaPratinjauDokumen(doc) {
           );
         }
 
-        function cetakBAPP(wo) {
-          notify(
-            'Ekspor Berita Acara (BAPP)',
-            'Berita Acara Penyelesaian Pekerjaan & Penutupan Izin Objek (' + wo.id + ') berhasil diekspor ke PDF resmi standar PLN UID Yogyakarta.',
-            'success'
-          );
+        function cetakBAPP() {
+          notify('PDF BAPP belum tersedia', 'Format dan pemetaan bidang menunggu persetujuan K07.', 'warning');
         }
 
         function cetakLaporanEvaluasiR05() {
-          notify(
-            'Laporan Evaluasi PDKB',
-            'Laporan Evaluasi Eksekutif & Rekapitulasi Komisi PDKB berhasil diekspor ke dokumen resmi.',
-            'success'
-          );
+          notify('Pilih snapshot rekap', 'Unduh CSV dari versi rekap di R05 pada mode kerja.', 'warning');
         }
 
         function mulaiPekerjaanLapangan(wo) {
           wo.status = 'Ongoing';
-          wo.waktu_mulai_aktual = '13 Nov 2026, ' + new Date().toLocaleTimeString('id-ID');
+          wo.waktu_mulai_aktual = new Date().toISOString();
           notify(
             'Pekerjaan Dimulai',
             'Status ' + wo.id + ' resmi menjadi Ongoing. Waktu mulai aktual tersimpan di sistem.',
@@ -8015,6 +7859,56 @@ function bukaPratinjauDokumen(doc) {
           return 'bg-blue-500';
         }
 
+        const workflowBridge = IwomsWorkspace.createBridge({
+          activeRoleKey, currentUser, workOrders, selectedWO, activeScreenCode, activeMenu,
+          showDetailModal, showDocPreviewModal, formP01, notify, roleAllowedScreens, masterKatalogList, sampleAuditLogs, bukaPratinjauDokumen,
+          sampleCrew, wipItems,
+          mulaiPekerjaanLapangan, jedaOperasional, lanjutOperasional, selesaikanPekerjaanLapangan,
+          tutupWODireksi, kembalikanRevisiLaporan
+        });
+        const workflowDocData = computed(() => {
+          const data = activeDocData.value;
+          const wo = selectedWO.value;
+          if (!wo?.processVersion) return data;
+          if (isTemplateBlankMode.value) return { ...data, isIbpprCompleted: false, letter_signatures: ['supervisor_pdkb','manajer_area'].map(role=>({id:role,role,actorName:'( ................ )'})), jsa_author: '( ................ )', jsa_reviewer: '( ................ )', jsa_approver: '( ................ )', jsa_responsible: '( ................ )', jsa_status: 'Blangko kosong' };
+          const survey = wo.surveyVersions.at(-1);
+          const surveyPlaceholders = { ...Object.fromEntries(Object.keys(data.survey).map(key => [key, '(Belum dicatat)'])), completed: false };
+          const jsa = workflowBridge.workflow.documentByType(wo.id, 'JSA');
+          const ibppr = workflowBridge.workflow.documentByType(wo.id, 'IBPPR');
+          const sp2b = workflowBridge.workflow.documentByType(wo.id, 'SP2B');
+          const sp3b = workflowBridge.workflow.documentByType(wo.id, 'SP3B');
+          const letter = previewingDoc.value?.kode === 'DOC-06' ? sp3b : sp2b;
+          const letterIssued = letter?.status === 'issued';
+          const people = letter?.rosterSnapshot?.people || [];
+          return { ...data, isSurveyCompleted: !!survey, isJsaCompleted: jsa?.status === 'approved', isIbpprCompleted: ibppr?.status === 'approved', isSp2bIssued: sp2b?.status === 'issued',
+            isSp3bIssued: sp3b?.status === 'issued', isExecutionStarted: false,
+            job_briefing: wo.readiness?.findLast(record=>record.nodeId==='Node_job_briefing'),
+            safety_briefing: wo.readiness?.findLast(record=>record.nodeId==='Node_safety_briefing'),
+            letter_signatures: ['supervisor_pdkb','manajer_area'].map(role=>letter?.decisions.find(decision=>decision.role===role && decision.result==='approved') || {id:role,role,actorName:'(Menunggu keputusan)'}),
+            letter_issued_at: letter?.issuedAt ? workflowBridge.workflow.formatTime(letter.issuedAt) : '(Belum terbit)',
+            sp2b_version_id: sp2b?.id, sp2b_limits: sp2b?.payload.limits || '(Belum ditetapkan)',
+            metode: wo.plan?.method || '(Belum direncanakan)', plan_date: wo.plan?.date || '(Belum direncanakan)',
+            tanggal: ['DOC-04','DOC-05','DOC-06'].includes(previewingDoc.value?.kode) && letter?.issuedAt ? new Date(letter.issuedAt).toLocaleDateString('id-ID',{timeZone:'Asia/Jakarta'}) : previewingDoc.value?.kode === 'DOC-02' && survey ? survey.surveyDate : wo.tanggal_pengajuan,
+            penyulang: sp2b?.payload.circuit || '(Belum ditetapkan)', tiang: sp2b?.payload.workLocation || wo.lokasi,
+            gardu_induk: '(Belum dicatat)', ulp: '(Belum dicatat)', up3: wo.unitId,
+            kepala_operasi: letterIssued ? letter.decisions.find(decision => decision.role === 'manajer_area')?.actorName : '(Menunggu penerbitan)',
+            tl_pdkb: letter?.decisions.find(decision => decision.role === 'supervisor_pdkb')?.actorName || '(Menunggu pemeriksaan)',
+            pengawas_pekerjaan: people.find(person => person.personId === letter?.payload.workSupervisor)?.name || '(Belum ditetapkan)',
+            pengawas_k3: people.find(person => person.personId === letter?.payload.safetySupervisor)?.name || '(Belum ditetapkan)',
+            tim_hotline: letterIssued ? people.map((person,index) => ({ no:index+1,nama:person.name,nip:'(NIP belum dicatat)',peran:person.duty,no_sertifikat:person.certificateNo,verified:true })) : [],
+            jsa_steps: jsa ? [{ no: 1, tahapan: jsa.payload.steps, bahaya: jsa.payload.hazards, mitigasi: jsa.payload.controls }] : [],
+            jsa_version: jsa?.version, jsa_status: jsa?.status || 'Belum diajukan', jsa_responsible: jsa?.payload.responsible || '(Belum dicatat)',
+            jsa_author: isTemplateBlankMode.value ? '( ................ )' : jsa?.submittedByName || '(Menunggu pengajuan)',
+            jsa_reviewer: isTemplateBlankMode.value ? '( ................ )' : jsa?.decisions.find(item => item.role === 'p2k3_k3l' && item.result === 'approved')?.actorName || '(Menunggu pemeriksaan)',
+            jsa_approver: isTemplateBlankMode.value ? '( ................ )' : jsa?.decisions.find(item => item.role === 'asman_jaringan' && item.result === 'approved')?.actorName || '(Menunggu persetujuan)',
+            sp2b_no: sp2b?.status === 'issued' ? sp2b.payload.number : '(Belum diterbitkan)', sp3b_no: sp3b?.status === 'issued' ? sp3b.payload.number : '(Belum diterbitkan)',
+            survey: survey ? { ...surveyPlaceholders, completed: true, struktur_tanah: survey.findings,
+              jarak_jalan: survey.access, material_tool: survey.equipment + ' / ' + survey.material,
+              status_preparator: 'Survei tersimpan', nama_preparator: workflowBridge.workflow.actorNameFor(wo.id, 'survey'),
+              status_tl_pdkb: wo.feasibility?.reason || '(Menunggu pemeriksaan)', nama_tl_pdkb: wo.feasibility ? workflowBridge.workflow.actorNameFor(wo.id, 'feasibility') : '(Menunggu pemeriksaan)',
+              status_asman: '(Rujuk keputusan kelayakan Supervisor)' } : surveyPlaceholders };
+        });
+
         return {
           isTemplateBlankMode,
           cetakFormulirResmi,
@@ -8087,7 +7981,6 @@ function bukaPratinjauDokumen(doc) {
           tambahDokumenM07,
           isMenuAllowed,
           roleAllowedScreens,
-          filteredMyActions,
           onRoleChange,
           switchMenu,
           openDetailWO,
@@ -8136,7 +8029,9 @@ function bukaPratinjauDokumen(doc) {
           countWIPByAnswer,
           getScreenTitle,
           getStatusBadgeClass,
-          getStatusDotClass
+          getStatusDotClass,
+          ...workflowBridge,
+          activeDocData: workflowDocData
         };
       }
     });

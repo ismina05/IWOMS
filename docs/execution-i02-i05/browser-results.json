@@ -1,0 +1,11 @@
+{
+  "woId": "WO-20261119-148e20ca",
+  "method": "DOM input/change, button click, CDP Enter pada kartu tugas; preview dan refresh; role simulasi dalam profil terisolasi",
+  "metrics": {
+    "width": 390,
+    "scroll": 390,
+    "font": "Geist, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+  },
+  "errors": [],
+  "result": "PASS"
+}

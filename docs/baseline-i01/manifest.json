@@ -1,0 +1,11 @@
+{
+  "capturedAt": "2026-11-18T21:18:06.551Z",
+  "commit": "438e746c7d5ba46e539155bf272af9ec396f6418",
+  "branch": "develop/bpmn-pdkb",
+  "sourceSha256": "4f73df65b86052063b9a1fc24427a3c807cdb0ad89374f6aa2de48669d2d6f19",
+  "upstreamTextSha256": "2302d67f947d5378c75b70f28ff66c01a4684d732dba721c254e3a25d79aca38",
+  "node": "v24.22.0",
+  "source": "index.html",
+  "statusBefore": " M index.html\n?? docs/\n?? scripts/\n",
+  "scope": "I01"
+}

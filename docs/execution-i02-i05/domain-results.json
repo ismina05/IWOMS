@@ -1,0 +1,81 @@
+{
+  "count": 19,
+  "results": [
+    {
+      "name": "tl_op submit, rejection, same-ID revision, priority, survey, plan",
+      "result": "PASS"
+    },
+    {
+      "name": "tl_op stops at own BPMN terminal",
+      "result": "PASS"
+    },
+    {
+      "name": "tl_har submit, rejection, same-ID revision, priority, survey, plan",
+      "result": "PASS"
+    },
+    {
+      "name": "tl_har stops at own BPMN terminal",
+      "result": "PASS"
+    },
+    {
+      "name": "tl_konstruksi submit, rejection, same-ID revision, priority, survey, plan",
+      "result": "PASS"
+    },
+    {
+      "name": "tl_konstruksi stops at own BPMN terminal",
+      "result": "PASS"
+    },
+    {
+      "name": "wrong role, unit, owner and out-of-turn rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "each approval level returns through Asman and keeps the same WO",
+      "result": "PASS"
+    },
+    {
+      "name": "idempotent create and action, conflicting reused key rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "stale object version and stale tab require reload",
+      "result": "PASS"
+    },
+    {
+      "name": "failed persistence leaves state and task unchanged, retry works",
+      "result": "PASS"
+    },
+    {
+      "name": "not feasible requires explicit notice to originator",
+      "result": "PASS"
+    },
+    {
+      "name": "permit/date alone cannot skip feasibility",
+      "result": "PASS"
+    },
+    {
+      "name": "legacy review keeps old approvals and requires named originator",
+      "result": "PASS"
+    },
+    {
+      "name": "corrupt storage is reported without replacing data",
+      "result": "PASS"
+    },
+    {
+      "name": "reset only available to explicit demo administrator",
+      "result": "PASS"
+    },
+    {
+      "name": "task queue resolves all 17 canonical roles with new fixture IDs",
+      "result": "PASS"
+    },
+    {
+      "name": "attachment survives reload and other owner cannot modify it",
+      "result": "PASS"
+    },
+    {
+      "name": "survey input failure is atomic and needs full initial analyses",
+      "result": "PASS"
+    }
+  ]
+}

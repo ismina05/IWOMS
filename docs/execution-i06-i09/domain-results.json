@@ -1,0 +1,273 @@
+{
+  "count": 67,
+  "results": [
+    {
+      "name": "H01 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H01 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H01 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H01 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H02 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H02 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H02 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H02 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H03 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H03 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H03 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H03 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H04 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H04 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H04 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H04 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H05 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H05 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H05 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H05 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H06 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H06 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H06 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H06 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H07 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H07 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H07 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H07 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H08 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H08 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H08 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H08 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H09 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H09 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H09 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H09 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H10 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H10 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H10 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H10 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H11 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H11 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H11 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H11 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "H12 resolved",
+      "status": "PASS"
+    },
+    {
+      "name": "H12 temporary",
+      "status": "PASS"
+    },
+    {
+      "name": "H12 cancel-approved",
+      "status": "PASS"
+    },
+    {
+      "name": "H12 cancel-rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "JSA rejection at k3, immutable prior version and hold recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "JSA rejection at asman, immutable prior version and hold recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "IBPPR rejection at k3, immutable prior version and hold recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "IBPPR rejection at asman, immutable prior version and hold recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "height permit rejection at reviewer 1 returns to K3 in new version",
+      "status": "PASS"
+    },
+    {
+      "name": "height permit rejection at reviewer 2 returns to K3 in new version",
+      "status": "PASS"
+    },
+    {
+      "name": "height permit rejection at reviewer 3 returns to K3 in new version",
+      "status": "PASS"
+    },
+    {
+      "name": "height permit rejection at reviewer 4 returns to K3 in new version",
+      "status": "PASS"
+    },
+    {
+      "name": "height rejection integrates H03",
+      "status": "PASS"
+    },
+    {
+      "name": "height not required skips permit and valid roster reaches SP2B boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "expired person blocks SP2B; valid replacement verified with original identity retained in history",
+      "status": "PASS"
+    },
+    {
+      "name": "renewal by manager returns through Preparator and full verification",
+      "status": "PASS"
+    },
+    {
+      "name": "failed renewal integrates H04 and competency mismatch cannot pass",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong reviewer, stale document version, duplicate submit and storage failure",
+      "status": "PASS"
+    },
+    {
+      "name": "support files belong to a single submitted document version",
+      "status": "PASS"
+    },
+    {
+      "name": "saved I05 boundary becomes actionable without losing records",
+      "status": "PASS"
+    },
+    {
+      "name": "replacement cannot reduce competence requirements or replace a valid member",
+      "status": "PASS"
+    },
+    {
+      "name": "hold coordination has nine Preparator and three Kepala Regu causes",
+      "status": "PASS"
+    },
+    {
+      "name": "H04 actual recovery updates letter evidence then re-verifies the same roster",
+      "status": "PASS"
+    }
+  ]
+}
