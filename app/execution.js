@@ -40,7 +40,7 @@
     if (['Node_perlu_delegasi','Node_pilih_penerima_lain'].includes(node)) fields.push(['candidateId','Calon Pelaksana dari tim','person']);
     if (node === 'Node_normal_petugas_gi') fields.push(['applied','Penormalan telah dilaksanakan','checkbox']);
     if (node === 'Node_evaluasi_k3_pelaksanaan') fields.push(['safe','Evaluasi K3 menyatakan kondisi telah pulih','checkbox']);
-    if (node === 'Node_periksa_cuaca') fields.push(['conditionsOk','Cuaca dan kondisi awal memenuhi pemeriksaan','checkbox']);
+    if (node === 'Node_periksa_cuaca') fields.unshift(['conditionsOk','Cuaca dan kondisi awal memenuhi pemeriksaan','checkbox']);
     const screen = node.startsWith('Node_normal') || node === 'Node_minta_penormalan' ? 'E03' : ['Node_cek_ulang_kondisi_awal','Node_periksa_gangguan_pelaksanaan','Node_evaluasi_k3_pelaksanaan'].includes(node) ? 'E02' : 'E01';
     return {screen,fields,primary:options[0],alternatives:options.slice(1)};
   }

@@ -189,14 +189,32 @@
           case 'wip-approve':
             updateWip(wo,actor,action,data,now);
             break;
+          case 'detach':
           case 'attach':
+          case 'attach-many': {
             if (!['draft', 'revision'].includes(wo.stage)) fail('Lampiran pengajuan diperbarui saat menyusun draft atau revisi.');
-            required(data, ['name', 'mime', 'content']);
-            if (!/^data:(application\/pdf|image\/(png|jpeg|webp));base64,[A-Za-z0-9+/=]+$/.test(data.content)) fail('Gunakan berkas PDF, PNG, JPEG atau WebP.');
-            if (data.content.length > 2800000) fail('Ukuran lampiran demo maksimal 2 MB per berkas.');
-            const attachment = { id: global.crypto.randomUUID(), woId: wo.id, type: 'proposal-attachment', version: 1, ...clone(data), createdBy: actor.id, at: now };
-            next.documents.push(attachment); wo.documentIds.push(attachment.id);
+            const files = action === 'attach-many' ? data.files : [data];
+            if (!Array.isArray(files) || !files.length || files.length > 9) fail('Pilih satu sampai sembilan berkas.');
+            const slots = new Set();
+            for (const file of files) {
+              if (file.slot || action !== 'attach') {
+                if (!/^DOC-0[1-9]$/.test(file.slot) || slots.has(file.slot)) fail('Gunakan satu berkas untuk setiap kode dokumen.');
+                slots.add(file.slot);
+                const removed = new Set(next.documents.filter(item => item.woId === wo.id && item.type === 'proposal-attachment' && item.slot === file.slot).map(item => item.id));
+                next.documents = next.documents.filter(item => !removed.has(item.id));
+                wo.documentIds = wo.documentIds.filter(id => !removed.has(id));
+                wo.removedProposalSlots = (wo.removedProposalSlots || []).filter(slot => slot !== file.slot);
+                if (action === 'detach') wo.removedProposalSlots.push(file.slot);
+              }
+              if (action === 'detach') continue;
+              required(file, ['name', 'mime', 'content']);
+              if (!/^data:(application\/pdf|image\/(png|jpeg|webp));base64,[A-Za-z0-9+/=]+$/.test(file.content)) fail('Gunakan berkas PDF, PNG, JPEG atau WebP.');
+              if (file.content.length > 2800000) fail('Ukuran lampiran demo maksimal 2 MB per berkas.');
+              const attachment = { ...clone(file), id: global.crypto.randomUUID(), woId: wo.id, type: 'proposal-attachment', version: 1, createdBy: actor.id, at: now };
+              next.documents.push(attachment); wo.documentIds.push(attachment.id);
+            }
             break;
+          }
           case 'save':
           case 'submit': {
             if (!['draft', 'revision'].includes(wo.stage)) fail('WO tidak sedang dalam pengajuan.');
@@ -245,7 +263,13 @@
             required(data, ['surveyDate', 'location', 'findings', 'access', 'equipment', 'material']);
             if (!validDate(data.surveyDate)) fail('Tanggal survei tidak valid.');
             wo.surveyVersions.push({ ...clone(data), version: wo.surveyVersions.length + 1, actorId: actor.id, at: now });
-            edge('Flow_0034'); move('analysis'); break;
+            edge('Flow_0034'); move('analysis');
+            if (data.jsa || data.ibppr) {
+              required(data, ['jsa', 'ibppr']);
+              wo.initialAnalyses.push({ jsa: data.jsa, ibppr: data.ibppr, surveyVersion: wo.surveyVersions.length, actorId: actor.id, at: now });
+              edge('Flow_0035'); move('feasibility');
+            }
+            break;
           case 'analysis':
             if (wo.stage !== 'analysis') fail('Analisis awal menunggu hasil survei.');
             required(data, ['jsa', 'ibppr']);
@@ -293,7 +317,7 @@
       const previous = this.state.orders.find(order => order.id === wo.id);
       const audit = { id: global.crypto.randomUUID(), woId: wo.id, processVersion: PROCESS, nodeId: auditNode || (action === 'create' ? 'Node_start_' + suffix(actor.role) : previous.nodeId),
         nextNodeId: auditTarget || wo.nodeId, edgeIds: trail, action, actor: clone(actor), at: now, version: wo.version,
-        data: ['attach', 'document-file'].includes(action) ? { name: data.name, mime: data.mime } : clone(data),
+        data: action === 'attach-many' ? {files: data.files.map(({slot,name,mime}) => ({slot,name,mime}))} : ['attach', 'document-file'].includes(action) ? { name: data.name, mime: data.mime } : clone(data),
         documentVersionId: data.documentVersionId || (['document-submit', 'document-file'].includes(action) ? next.documents.at(-1)?.id : null),
         taskId: previous ? wo.id + ':' + previous.version : null };
       next.audits.push(audit);
@@ -324,6 +348,22 @@
         next.orders.push(wo); next.tasks.push(taskFor(wo));
       }
       this.storage.setItem(this.key, JSON.stringify(next)); this.state = next;
+    }
+    clearDrafts(actor) {
+      if (actor.role !== 'superadmin') fail('Hapus draf tersedia untuk Super Admin.', 'FORBIDDEN');
+      const next = this.read();
+      const ids = new Set(next.orders.filter(wo => wo.stage === 'draft' && wo.status === 'Draft' && wo.unitId === actor.unitId).map(wo => wo.id));
+      if (!ids.size) return 0;
+      for (const key of ['orders', 'tasks', 'documents', 'operations', 'audits', 'notifications']) {
+        next[key] = next[key].filter(item => !ids.has(key === 'orders' ? item.id : item.woId));
+      }
+      for (const [key, receipt] of Object.entries(next.receipts)) {
+        if (ids.has(receipt.result?.woId)) delete next.receipts[key];
+      }
+      next.revision++;
+      this.storage.setItem(this.key, JSON.stringify(next));
+      this.state = next;
+      return ids.size;
     }
     reset(actor) {
       if (actor.role !== 'superadmin') fail('Reset data demo tersedia untuk Super Admin.', 'FORBIDDEN');

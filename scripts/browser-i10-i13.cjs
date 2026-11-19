@@ -7,7 +7,7 @@ async function browserChecks() {
     if (!file.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
     fs.readFile(file, (error, data) => {
       if (error) { res.writeHead(404).end(); return; }
-      res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html; charset=utf-8' : file.endsWith('.pdf') ? 'application/pdf' : file.endsWith('.js') ? 'text/javascript' : 'application/octet-stream');
+      res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html; charset=utf-8' : file.endsWith('.pdf') ? 'application/pdf' : file.endsWith('.js') ? 'text/javascript' : file.endsWith('.css') ? 'text/css' : 'application/octet-stream');
       res.end(data);
     });
   });
@@ -36,6 +36,7 @@ async function browserChecks() {
     ws.onmessage = event => {
       const message = JSON.parse(event.data);
       if (message.method === 'Runtime.exceptionThrown') errors.push(message.params);
+      if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') errors.push(message.params.args.map(arg=>arg.description || arg.value).join(' '));
       originalHandler(event);
     };
     await send('Emulation.setDeviceMetricsOverride', {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
@@ -72,21 +73,42 @@ async function browserChecks() {
       await run(toggle);
       assert.equal(await evaluate('window.iwomsApp.workflow.referenceMode'),true);
       assert.ok(await evaluate('window.iwomsApp.workflow.dashboardRows().length > 0'));
+      assert.ok(await evaluate("window.DataTable && window.Swal && document.querySelector('.dt-container')"));
+      assert.equal(await evaluate("document.querySelectorAll('main input[type=search]').length"),1);
+      assert.equal(await evaluate("[...document.querySelectorAll('.iwoms-table-host table')].filter(table=>table.getBoundingClientRect().width).length"),1);
+      assert.deepEqual(await evaluate("[...document.querySelectorAll('.dt-paging-button')].map(button=>button.textContent.trim())"),['<','>']);
+      await run("const input=document.querySelector('main input[type=search]'); input.value='WO_TIDAK_ADA'; input.dispatchEvent(new Event('input',{bubbles:true}));");
+      assert.ok(await evaluate("document.querySelector('.dt-empty')?.textContent.includes('Belum ada data')"));
+      await run("const input=document.querySelector('main input[type=search]'); input.value=''; input.dispatchEvent(new Event('input',{bubbles:true}));");
       assert.deepEqual(await dashboard(),layout);
       await click('Mode Kalender');
       assert.ok(await evaluate('document.body.innerText.includes("2026-11-13")'));
       await click('Tabel Data');
+      await role('tl_op');
+      await click('Buat Pengajuan WO Baru');
+      assert.ok(await evaluate("document.body.innerText.includes('1. Proses Bisnis') && document.body.innerText.includes('8. Dokumen Tahap Pengajuan')"), JSON.stringify({errors:errors.map(error=>error.exceptionDetails?.exception?.description), screen:await evaluate('window.iwomsApp.activeScreenCode'),preview:await evaluate('document.body.innerText.slice(-900)')}));
+      await send('Page.reload');
+      for (let retry = 0; retry < 40; retry++) {
+        if (await evaluate("window.iwomsApp?.workflow?.actor.role === 'tl_op'")) break;
+        await new Promise(resolve => setTimeout(resolve, 250));
+      }
+      assert.equal(await evaluate('window.iwomsApp.workflow.actor.role'),'tl_op');
+      assert.equal(await evaluate('window.iwomsApp.workflow.referenceMode'),true);
+      await role('tl_har');
       await run(toggle);
       assert.equal(await evaluate('window.iwomsApp.workflow.dashboardRows().length'),0);
       assert.deepEqual(await dashboard(),layout);
     }
     await click('Buat Pengajuan WO Baru');
+    assert.ok(await evaluate("!document.body.innerText.includes('1. Proses Bisnis') && document.querySelector('[class*=col-span-2]') && [...document.querySelectorAll('[class*=col-span-2]')].some(el=>el.innerText.includes('Dokumen') && getComputedStyle(el).gridColumnEnd==='span 2')"));
+    assert.deepEqual(await evaluate("Array.from(document.querySelector('[name=katalog_id]').options, option => option.value)"),['','KAT-01']);
     await field('nama_wo','WO uji I10-I13');await field('katalog_id','KAT-01');await field('lokasi','Tiang uji');await field('uraian','Kebutuhan uji UI');
     await click('Pratinjau formulir');
     assert.equal(await evaluate('window.iwomsApp.showDocPreviewModal'),true);
     await click('Tutup Pratinjau');
     await screenshot('desktop-proposal');await click('Ajukan ke Asman');
     assert.equal(await evaluate('window.iwomsApp.workflow.error'),'');
+    assert.ok(await evaluate("document.querySelector('.swal2-toast')?.textContent.includes('Informasi WO')"));
     const woId=await evaluate("window.iwomsApp.workOrders.find(w=>w.stage==='asman').id");
     currentId = woId;
     await send('Page.reload');await new Promise(r=>setTimeout(r,1500));
@@ -102,8 +124,8 @@ async function browserChecks() {
     await field('priority','Tinggi');await field('workPlan','Survei terjadwal');await click('Tetapkan dan tugaskan survei');
     await role('preparator_pdkb');await openTask();
     for(const [name,value] of Object.entries({surveyDate:'2026-11-19',location:'Tiang uji',findings:'Konduktor perlu dipelihara',access:'Jalan umum',equipment:'Peralatan PDKB',material:'Jumper'}))await field(name,value);
-    await screenshot('desktop-survey');await click('Simpan survei dan susun analisis');
-    await click('Buka');await field('jsa','Risiko awal dan mitigasi');await field('ibppr','Analisis risiko awal');await click('Ajukan hasil survei ke Supervisor');
+    await field('jsa','Risiko awal dan mitigasi');await field('ibppr','Analisis risiko awal');
+    await screenshot('desktop-survey');await click('Ajukan hasil survei dan analisis');
     await role('supervisor_pdkb');await run(`document.querySelectorAll('[data-work-task], [role="button"][tabindex="0"]').forEach(el=>{if(el.textContent.includes('${woId}'))el.click()})`);
     await field('reason','Layak sesuai survei');await screenshot('desktop-feasibility');await click('Nyatakan layak');
     await role('preparator_pdkb');await openTask();
@@ -267,9 +289,18 @@ async function browserChecks() {
           ['preparator_pdkb','Tutup administrasi WO',{}]
         ])await act(lane,label,values);
         assert.ok(await evaluate("window.iwomsApp.workflow.orders.some(wo=>wo.status==='WO Completed')"));
+        if(process.env.IWOMS_TEST_EXECUTION==='release'){
+          await run(`const w=window.iwomsApp.workflow; w.open(w.orders.find(wo=>wo.id===${JSON.stringify(woId)}));`);
+          await run("const panel=[...document.querySelectorAll('details')].find(el=>el.querySelector('summary')?.textContent.includes('Pratinjau dokumen WO')); if(!panel || panel.querySelectorAll('li').length!==9) throw Error('Daftar template tidak lengkap'); panel.open=true; panel.querySelector('li:nth-child(4) button').click()");
+          assert.ok(await evaluate("window.iwomsApp.showDocPreviewModal && window.iwomsApp.activeDocData.sp2b_no.startsWith('SP2B/')"));
+          await click('Tutup Pratinjau');
+          await run("const panel=[...document.querySelectorAll('details')].find(el=>el.querySelector('summary')?.textContent.includes('Pratinjau dokumen WO')); panel.querySelector('li:nth-child(9) button').click()");
+          assert.equal(await evaluate('window.iwomsApp.workflow.documentPreview.rows.length'),22);
+          await click('Tutup dokumen');
+        }
         await run("window.iwomsApp.activeScreenCode='R05'");
         const period=await evaluate("new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'}).slice(0,7)");
-        await run(`const el=document.querySelector('input[type=month]');el.value='${period}';el.dispatchEvent(new Event('input',{bubbles:true}));`);
+        await run(`const el=document.querySelector('input[type=month]');el.value='${period}';el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));`);
         await click('Buat draf');
         await run("document.querySelectorAll('details').forEach(el=>el.open=true)");
         await click('Susun snapshot dan ajukan');
