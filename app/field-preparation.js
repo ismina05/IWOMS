@@ -1,5 +1,6 @@
 (function (global) {
   'use strict';
+  const details = typeof module !== 'undefined' && module.exports ? require('./document-details.js') : global.IwomsDocumentDetails;
   const copy = value => JSON.parse(JSON.stringify(value));
   const configurations = {
     Node_serahkan_sp2b: { documentType: 'SP2B', primary: ['sp2b-deliver', 'Serahkan SP2B kepada Pelaksana'] },
@@ -46,6 +47,7 @@
       if (!delivery || delivery.documentVersionId !== doc.id || delivery.recipientId !== actor.id) fail('Anda bukan penerima versi surat ini.');
       if (data.acknowledged !== true) fail('Baca dan konfirmasi pemahaman surat terlebih dahulu.');
       delivery.receivedBy = actor.id; delivery.receivedAt = now; delivery.acknowledged = true;
+      if(kind==='sp2b')Object.assign(delivery,details.signature(data,fail));
     }
     if (action === 'sp2b-deliver') {
       handoff('sp2b', document('SP2B', 'issued'), data.recipientId, 'pelaksana_pdkb'); follow('Node_tanda_terima_sp2b');
@@ -74,7 +76,19 @@
       document('EQUIPMENT_CHECKLIST', 'approved'); requireText('reason', 'instruksi pemeriksaan'); readiness(); follow('Node_periksa_kesiapan_lapangan'); return true;
     }
     if (action === 'readiness-check') {
-      document('EQUIPMENT_CHECKLIST', 'approved'); requireText('reason', 'hasil pemeriksaan'); readiness();
+      const checklist=document('EQUIPMENT_CHECKLIST', 'approved');
+      requireText('reason', 'hasil pemeriksaan');
+      if(data.itemChecks != null){
+        if(!Array.isArray(data.itemChecks) || data.itemChecks.length!==checklist.items?.length)fail('Daftar pemeriksaan berbeda dengan versi checklist.');
+        data.itemChecks=data.itemChecks.map(item=>{
+          if(!['yes','no'].includes(item?.answer) || typeof item.note!=='string' || item.note.length>1000 || (item.answer==='no' && !item.note.trim()))fail('Pilih Ada/Tidak untuk setiap item dan beri keterangan untuk item yang tidak tersedia.');
+          return {answer:item.answer,note:item.note.trim()};
+        });
+        for(const [category,key] of [['equipment','equipmentReady'],['material','materialReady']]){
+          if(checklist.items.some((item,index)=>item.category===category && data.itemChecks[index].answer==='no'))data[key]=false;
+        }
+      }
+      readiness();
       if (data.equipmentReady !== true || data.materialReady !== true) { markHold('kesiapan_lapangan'); follow('Node_alat_material_siap', 'Node_hold_kesiapan_lapangan'); }
       else if (data.apdReady !== true) wo.pendingReadinessMessage = 'Hasil pemeriksaan disimpan. Lengkapi APD dan catat pemeriksaan ulang sebelum melanjutkan.';
       else follow('Node_alat_material_siap', 'Node_job_briefing');

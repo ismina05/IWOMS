@@ -8,7 +8,7 @@
     zeroRecords: 'Tidak ada data yang cocok.',
     search: 'Cari:',
     lengthMenu: '_MENU_ baris',
-    info: '_START_?_END_ dari _TOTAL_ baris',
+    info: '_START_–_END_ dari _TOTAL_ baris',
     infoEmpty: '0 baris',
     infoFiltered: '(dari _MAX_ baris)',
     paginate: { next: '&gt;', previous: '&lt;' },

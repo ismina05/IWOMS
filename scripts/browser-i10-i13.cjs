@@ -45,7 +45,7 @@ async function browserChecks() {
     assert.equal(await evaluate('Boolean(window.iwomsApp?.workflow)'),true);
     async function run(code) { return evaluate(`(async()=>{${code};await Vue.nextTick();return true})()`); }
     async function click(text) {
-      await run(`const el=[...document.querySelectorAll('button')].find(e=>e.textContent.trim()===${JSON.stringify(text)} && e.getBoundingClientRect().width && (${JSON.stringify(text)}!=='Buka' || e.closest('tr')?.textContent.includes(${JSON.stringify(currentId)}))); if(!el)throw Error('Missing button '+${JSON.stringify(text)});el.click()`);
+      await run(`const el=[...document.querySelectorAll('button')].find(e=>e.textContent.trim()===${JSON.stringify(text)} && e.getBoundingClientRect().width && (${JSON.stringify(text)}!=='Buka' || e.closest('tr, [data-work-card]')?.textContent.includes(${JSON.stringify(currentId)}))); if(!el)throw Error('Missing button '+${JSON.stringify(text)});el.click()`);
     }
     async function field(name,value) {
       await run(`const el=document.querySelector('[name="${name}"]');if(!el)throw Error('Missing field ${name}');if(el.type==='checkbox'){el.checked=${JSON.stringify(value)};el.dispatchEvent(new Event('change',{bubbles:true}))}else{el.value=${JSON.stringify(value)};el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}))}`);
@@ -84,6 +84,32 @@ async function browserChecks() {
       await click('Mode Kalender');
       assert.ok(await evaluate('document.body.innerText.includes("2026-11-13")'));
       await click('Tabel Data');
+      await role('preparator_pdkb');
+      await run("window.iwomsApp.activeScreenCode='P03';window.iwomsApp.activeMenu='perencanaan'");
+      assert.ok(await evaluate("document.body.innerText.includes('Pemeliharaan Jumper Hotspot') && !document.body.innerText.includes('Semua WO yang telah disetujui Direksi sudah dijadwalkan')"));
+      for(const [screen,lane,example] of [
+        ['P01','tl_har','Contoh draf I01'],['P02','asman_jaringan','I01-P02-DEMO-04'],
+        ['P04','piket_area','OPS-DEMO-01'],['E01','kepala_regu','I01-E01-DEMO-10'],
+        ['E02','pengawas_k3','I01-E01-DEMO-13'],['E03','piket_apd','OPS-DEMO-03'],
+        ['R01','preparator_pdkb','I01-R01-DEMO-18'],['R02','p2k3_k3l','I01-E01-DEMO-13'],
+        ['R03','manajer_area','I01-R03-DEMO-17'],['R04','piket_area','OPS-DEMO-03'],
+        ['R05','komisi_pusat','Diterima Komisi Pusat'],
+      ]){
+        await role(lane);
+        await run(`window.iwomsApp.activeScreenCode=${JSON.stringify(screen)}`);
+        assert.ok(await evaluate(`document.body.textContent.includes(${JSON.stringify(example)})`),screen+' harus menampilkan '+example);
+      }
+      await click('Muat skenario BPMN');
+      for(let retry=0;retry<40;retry++){
+        if(await evaluate('window.iwomsApp.workflow.scenarioMode')) break;
+        await new Promise(resolve=>setTimeout(resolve,250));
+      }
+      assert.equal(await evaluate('window.iwomsApp.workflow.scenarioMode'),true);
+      await role('preparator_pdkb');
+      await run("window.iwomsApp.activeScreenCode='P03';window.iwomsApp.activeMenu='perencanaan'");
+      assert.ok(await evaluate("window.iwomsApp.workflow.entries.some(wo=>wo.stage==='survey') && window.iwomsApp.workflow.entries.some(wo=>wo.stage==='plan') && document.querySelector('[data-work-card]')"));
+      await click('Keluar dari skenario BPMN');
+      await run(toggle);
       await role('tl_op');
       await click('Buat Pengajuan WO Baru');
       assert.ok(await evaluate("document.body.innerText.includes('1. Proses Bisnis') && document.body.innerText.includes('8. Dokumen Tahap Pengajuan')"), JSON.stringify({errors:errors.map(error=>error.exceptionDetails?.exception?.description), screen:await evaluate('window.iwomsApp.activeScreenCode'),preview:await evaluate('document.body.innerText.slice(-900)')}));
@@ -100,18 +126,30 @@ async function browserChecks() {
       assert.deepEqual(await dashboard(),layout);
     }
     await click('Buat Pengajuan WO Baru');
-    assert.ok(await evaluate("!document.body.innerText.includes('1. Proses Bisnis') && document.querySelector('[class*=col-span-2]') && [...document.querySelectorAll('[class*=col-span-2]')].some(el=>el.innerText.includes('Dokumen') && getComputedStyle(el).gridColumnEnd==='span 2')"));
+    assert.ok(await evaluate("document.querySelector('[data-proposal-preview] .border-dashed') && ![...document.querySelectorAll('input[type=file]')].some(input=>input.getClientRects().length) && !document.body.innerText.includes('Dokumen Tahap Pengajuan')"));
     assert.deepEqual(await evaluate("Array.from(document.querySelector('[name=katalog_id]').options, option => option.value)"),['','KAT-01']);
     await field('nama_wo','WO uji I10-I13');await field('katalog_id','KAT-01');await field('lokasi','Tiang uji');await field('uraian','Kebutuhan uji UI');
-    await click('Pratinjau formulir');
-    assert.equal(await evaluate('window.iwomsApp.showDocPreviewModal'),true);
-    await click('Tutup Pratinjau');
+    await field('poleNumber','U2-20/56');
+    await field('feeder','GODEAN 4');
+    assert.ok(await evaluate(`(async()=>{
+      const panel=document.querySelector('[data-proposal-preview]');
+      for(let i=0;i<30 && panel.querySelector('[aria-busy=true]');i++)await new Promise(resolve=>setTimeout(resolve,100));
+      const iframe=panel.querySelector('iframe');
+      if(!iframe?.src.startsWith('blob:') || panel.querySelector('[role=alert]'))return false;
+      const pdf=await PDFLib.PDFDocument.load(await (await fetch(iframe.src)).arrayBuffer());
+      return pdf.getPageCount()===2 && pdf.getTitle().includes(window.iwomsApp.workflow.selected.id);
+    })()`));
     await screenshot('desktop-proposal');await click('Ajukan ke Asman');
     assert.equal(await evaluate('window.iwomsApp.workflow.error'),'');
     assert.ok(await evaluate("document.querySelector('.swal2-toast')?.textContent.includes('Informasi WO')"));
+    assert.equal(await evaluate("window.iwomsApp.workOrders.find(wo=>wo.stage==='asman').poleNumber"),'U2-20/56');
     const woId=await evaluate("window.iwomsApp.workOrders.find(w=>w.stage==='asman').id");
     currentId = woId;
-    await send('Page.reload');await new Promise(r=>setTimeout(r,1500));
+    await send('Page.reload');
+    for(let retry=0;retry<60;retry++){
+      if(await evaluate('Boolean(window.iwomsApp?.workflow)')) break;
+      await new Promise(resolve=>setTimeout(resolve,250));
+    }
     assert.equal(await evaluate(`window.iwomsApp.workOrders.some(w=>w.id==='${woId}')`),true);
     await role('asman_jaringan');await openTask();await click('Setujui ke Supervisor');
     await role('supervisor_pdkb');await openTask();await field('reason','Perjelas lokasi');await click('Tolak dan kembalikan');
@@ -125,6 +163,17 @@ async function browserChecks() {
     await role('preparator_pdkb');await openTask();
     for(const [name,value] of Object.entries({surveyDate:'2026-11-19',location:'Tiang uji',findings:'Konduktor perlu dipelihara',access:'Jalan umum',equipment:'Peralatan PDKB',material:'Jumper'}))await field(name,value);
     await field('jsa','Risiko awal dan mitigasi');await field('ibppr','Analisis risiko awal');
+    await field('soil','Tanah padat');
+    const surveyTree=await send('DOM.getDocument');
+    const surveyImage=await send('DOM.querySelector',{nodeId:surveyTree.root.nodeId,selector:'input[accept="image/png,image/jpeg"]'});
+    await send('DOM.setFileInputFiles',{nodeId:surveyImage.nodeId,files:[path.join(root,'assets/logo_pln_resmi.jpg')]});
+    for(let i=0;i<30;i++){
+      if(await evaluate("window.iwomsApp.workflow.selected?.documentIds.length===1"))break;
+      await new Promise(resolve=>setTimeout(resolve,100));
+    }
+    assert.equal(await evaluate('window.iwomsApp.workflow.selected.documentIds.length'),1);
+    assert.equal(await evaluate('window.iwomsApp.workflow.form.soil'),'Tanah padat');
+
     await screenshot('desktop-survey');await click('Ajukan hasil survei dan analisis');
     await role('supervisor_pdkb');await run(`document.querySelectorAll('[data-work-task], [role="button"][tabindex="0"]').forEach(el=>{if(el.textContent.includes('${woId}'))el.click()})`);
     await field('reason','Layak sesuai survei');await screenshot('desktop-feasibility');await click('Nyatakan layak');
@@ -154,12 +203,28 @@ async function browserChecks() {
     await act('preparator_pdkb','Kirim hasil pemenuhan ke Supervisor',{reason:'Mitigasi telah diperbaiki'});
     await act('supervisor_pdkb','Kendala teratasi',{reason:'Bukti pemenuhan sesuai'});
     await act('supervisor_pdkb','Aktifkan kembali pada tahap asal',{reason:'Ajukan ulang JSA'});
-    await act('preparator_pdkb','Ajukan JSA ke P2K3/K3L',{steps:'Tahapan uji',hazards:'Listrik',controls:'Pengendalian diperbaiki',responsible:'Regu A'});
+    await role('preparator_pdkb');await openTask();await click('Tambah baris terstruktur');
+    for(const [key,value] of Object.entries({steps:'Tahapan uji',hazards:'Listrik',controls:'Pengendalian diperbaiki',responsible:'Regu A'}))await field('document-row-0-'+key,value);
+    await click('Ajukan JSA ke P2K3/K3L');
     await role('p2k3_k3l');await openTask();await screenshot('desktop-document-review');
     await click('Lihat versi dan persetujuan');
     assert.equal(await evaluate('window.iwomsApp.workflow.documentPreview.version'),2);
+    assert.equal(await evaluate('window.iwomsApp.workflow.documentPreview.payload.rows[0].responsible'),'Regu A');
     await screenshot('desktop-version-preview');await click('Tutup dokumen');
+    const signatureFile=path.join(output,'tanda-tangan-uji.png');
+    fs.writeFileSync(signatureFile,Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=','base64'));
+    const signatureTree=await send('DOM.getDocument');
+    const signatureInput=await send('DOM.querySelector',{nodeId:signatureTree.root.nodeId,selector:'input[accept="image/png"]'});
+    await send('DOM.setFileInputFiles',{nodeId:signatureInput.nodeId,files:[signatureFile]});
+    for(let i=0;i<50;i++){
+      if(await evaluate('window.iwomsApp.workflow.signaturePreview.startsWith("blob:")'))break;
+      await new Promise(resolve=>setTimeout(resolve,100));
+    }
+    assert.ok(await evaluate('window.iwomsApp.workflow.signaturePreview.startsWith("blob:")'),await evaluate('window.iwomsApp.workflow.error'));
+    await run("const slider=document.querySelector('input[type=range]');slider.value='0.45';slider.dispatchEvent(new Event('input',{bubbles:true}))");
     await click('Setujui versi dokumen ini');
+    assert.equal(await evaluate(`window.iwomsApp.workflow.orders.find(wo=>wo.id===${JSON.stringify(woId)}).nodeId`),'Node_setuju_jsa_asman');
+    assert.equal(await evaluate(`window.iwomsApp.workflow.documentByType(${JSON.stringify(woId)},'JSA').decisions[0].signature.x`),.45);
     await act('asman_jaringan','Setujui versi dokumen ini');
     await act('preparator_pdkb','Ajukan IBPPR ke P2K3/K3L',{hazards:'Listrik',riskAssessment:'Tinggi',controls:'Pengendalian terverifikasi',residualRisk:'Terkendali',responsible:'Regu A'});
     await act('p2k3_k3l','Setujui versi dokumen ini');await act('asman_jaringan','Setujui versi dokumen ini');
@@ -185,7 +250,7 @@ async function browserChecks() {
     await act('preparator_pdkb','Verifikasi surat baru dan periksa ulang tim');
     await act('preparator_pdkb','Verifikasi kompetensi dan masa berlaku');
     assert.equal(await evaluate(`window.iwomsApp.workOrders.find(w=>w.id==='${woId}').nodeId`),'Node_siapkan_sp2b');
-    await click('Buka');await screenshot('desktop-sp2b-boundary');
+    await openTask();await screenshot('desktop-sp2b-boundary');
     const flags=await evaluate(`(()=>{const a=window.iwomsApp;const original=a.selectedWO.status;const rows=['Approved','Scheduled','Ongoing','Completed'].map(status=>{a.selectedWO.status=status;return [a.activeDocData.isJsaCompleted,a.activeDocData.isIbpprCompleted,a.activeDocData.isSp2bIssued,a.activeDocData.isSp3bIssued]});a.selectedWO.status=original;return rows})()`);
     assert.ok(flags.every(row=>JSON.stringify(row)===JSON.stringify([true,true,false,false])));
     await run('window.iwomsApp.isTemplateBlankMode=true');
@@ -256,6 +321,7 @@ async function browserChecks() {
       await act('kepala_regu','Pengawasan tanpa delegasi',record);
       await act('kepala_regu','Mulai putaran pelaksanaan',record);
       await role('pengawas_k3'); await openTask();
+      await click('Buka formulir WIP');
       await run(`document.querySelectorAll('select').forEach(el=>{if(el.querySelector('option[value="${woId}"]')){el.value='${woId}';el.dispatchEvent(new Event('change',{bubbles:true}));}})`);
       await run("document.querySelectorAll('fieldset select').forEach((el,index)=>{el.value=index?'Ya':'Tidak';el.dispatchEvent(new Event('change',{bubbles:true}));})");
       await click('Ajukan WIP');
@@ -290,6 +356,54 @@ async function browserChecks() {
         ])await act(lane,label,values);
         assert.ok(await evaluate("window.iwomsApp.workflow.orders.some(wo=>wo.status==='WO Completed')"));
         if(process.env.IWOMS_TEST_EXECUTION==='release'){
+          await role('manajer_area');
+          await run(`const row=[...document.querySelectorAll('.dt-container tbody tr')].find(row=>row.textContent.includes(${JSON.stringify(woId)}));row.querySelector('button[title="Detail"],button:last-child').click();`);
+          assert.equal(await evaluate("window.iwomsApp.activeScreenCode"),'D01');
+          assert.ok(await evaluate("document.querySelector('[aria-labelledby=wo-detail-title]').textContent.includes('Direksi Pekerjaan')"));
+          await run("const modal=document.querySelector('[aria-labelledby=wo-detail-title]');modal.parentElement.click();modal.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));");
+          assert.ok(await evaluate("Boolean(window.iwomsApp.workflow.detail)"));
+          const openDetailRecords = panel => run(`document.querySelector('[aria-controls="detail-record-${panel}"]').click()`);
+          await openDetailRecords('documents');
+          assert.ok(await evaluate("document.querySelector('#detail-record-documents').textContent.includes('Izin Kerja Ketinggian') && document.querySelector('#detail-record-documents').textContent.includes('Bersyarat')"));
+          await click('Riwayat');
+          assert.deepEqual(await evaluate('window.iwomsApp.workflow.historyGroups.map(group=>group.events.length>0)'), Array(7).fill(true));
+          assert.ok(await evaluate("document.querySelectorAll('[aria-labelledby=wo-detail-title] .iwoms-stepper').length === 7 && document.querySelector('[aria-labelledby=wo-detail-title] .iwoms-stepper time')"));
+          const detailLayout = () => evaluate(`(() => {
+            const modal = document.querySelector('.wo-modal');
+            const scroll = modal.querySelector('.wo-modal-scroll');
+            const event = modal.querySelector('.wo-modal-event');
+            return {
+              width: modal.getBoundingClientRect().width,
+              fits: scroll.scrollWidth === scroll.clientWidth,
+              columns: getComputedStyle(modal.querySelector('.wo-modal-info')).gridTemplateColumns.split(' ').length,
+              dateOnRight: event.querySelector('time').getBoundingClientRect().left > event.querySelector('strong').getBoundingClientRect().left
+            };
+          })()`);
+          assert.deepEqual(await detailLayout(), {width:820, fits:true, columns:3, dateOnRight:true});
+          await screenshot('desktop-detail-riwayat');
+          await send('Emulation.setDeviceMetricsOverride', {width:390,height:844,deviceScaleFactor:1,mobile:true});
+          assert.deepEqual(await detailLayout(), {width:370, fits:true, columns:2, dateOnRight:true});
+          await screenshot('mobile-detail-riwayat');
+          await send('Emulation.setDeviceMetricsOverride', {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+          await openDetailRecords('documents');
+          await run("[...document.querySelectorAll('#detail-record-documents .doc')].find(row=>row.querySelector('strong')?.textContent==='Izin Kerja Ketinggian').querySelector('button').click()");
+          const detailPdf = () => evaluate(`(async()=>{
+            const pane=document.querySelector('#detail-record-viewer');
+            for(let i=0;i<60 && pane.getAttribute('aria-busy')==='true';i++)await new Promise(resolve=>setTimeout(resolve,100));
+            const frame=pane.querySelector('iframe');
+            if(!frame)throw Error(pane.textContent);
+            const pdf=await PDFLib.PDFDocument.load(await (await fetch(frame.src)).arrayBuffer());
+            return pdf.getTitle();
+          })()`);
+          assert.match(await detailPdf(),new RegExp(woId));
+          await run("const mode=document.querySelector('#detail-record-mode');mode.value='blank';mode.dispatchEvent(new Event('change',{bubbles:true}))");
+          assert.match(await detailPdf(),/Blangko/);
+          await run("document.querySelector('[aria-label=\"Dokumen berikutnya\"]').click()");
+          assert.match(await detailPdf(),/Surat Kewenangan/);
+          await click('Tutup pratinjau');
+          await run("document.querySelector('[data-wo-detail-close]').click()");
+          assert.equal(await evaluate("Boolean(window.iwomsApp.workflow.detail)"),false);
+          await role('preparator_pdkb');
           await run(`const w=window.iwomsApp.workflow; w.open(w.orders.find(wo=>wo.id===${JSON.stringify(woId)}));`);
           await run("const panel=[...document.querySelectorAll('details')].find(el=>el.querySelector('summary')?.textContent.includes('Pratinjau dokumen WO')); if(!panel || panel.querySelectorAll('li').length!==9) throw Error('Daftar template tidak lengkap'); panel.open=true; panel.querySelector('li:nth-child(4) button').click()");
           assert.ok(await evaluate("window.iwomsApp.showDocPreviewModal && window.iwomsApp.activeDocData.sp2b_no.startsWith('SP2B/')"));

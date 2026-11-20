@@ -1,5 +1,6 @@
 (function (global) {
   'use strict';
+  const details = typeof module !== 'undefined' && module.exports ? require('./document-details.js') : global.IwomsDocumentDetails;
   const lanes = { Node_pelaksanaan_bertegangan:'pelaksana_pdkb', Node_pengawasan_regu:'kepala_regu', Node_pengawasan_k3:'pengawas_k3' };
   const routes = {
     Node_periksa_cuaca: [['initial-safe','Kondisi awal memenuhi','Node_kondisi_awal_aman','Node_perlu_delegasi'],['initial-unsafe','Tahan rencana mulai','Node_kondisi_awal_aman','Node_evaluasi_kondisi_awal']],
@@ -55,6 +56,7 @@
     const route=options?.find(item=>item[0]===action);
     if (!route && !(lanes[origin] && ['lane-report','lane-stop'].includes(action))) return false;
     requireText('reason','catatan dan bukti tindakan');
+    if(['start-round','lane-report'].includes(action) && details.workChecks[origin])details.storeWorkChecks(state,wo,origin,data,actor,now,fail);
     const round=wo.executionRounds?.at(-1);
     if (lanes[origin]) {
       if (data.roundId!==round.id) fail('Putaran telah berubah.');
@@ -83,7 +85,7 @@
     if(action.startsWith('delegation-')) {
       const doc=wo.delegation?.document;
       if(!doc) fail('BA delegasi belum disiapkan.');
-      doc.decisions.push({id:global.crypto.randomUUID(),role:actor.role,actorName:actor.name,actorId:actor.id,at:now,result:'approved',reason:data.reason});
+      doc.decisions.push({id:global.crypto.randomUUID(),role:actor.role,actorName:actor.name,actorId:actor.id,at:now,result:'approved',reason:data.reason,...(action!=='delegation-archive'?details.signature(data,fail):{})});
       if(action==='delegation-archive') {doc.status='archived';state.documents.push(doc);wo.documentIds.push(doc.id);}
     }
     if(action==='round-clear' && round.stop) fail('Penghentian aktif memerlukan pengamanan dan evaluasi K3.');

@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview Riwayat WO | IWOMS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap">
+<style>
+
+  *{box-sizing:border-box} body{margin:0;background:#f1f5f9;color:#17283e;font:15px/1.5 "Segoe UI",sans-serif} h1,h2,h3,p{margin:0} h3{font-size:16px} button,select,textarea{font:inherit} button,a,summary{cursor:pointer} button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #0284c7;outline-offset:3px}
+  .top{background:#0b2340;color:white;padding:16px max(20px,5vw);border-bottom:3px solid #facc15;font-weight:700} main{max-width:1080px;margin:auto;padding:30px 16px} .box{border:1px solid #dbe4ee;border-radius:13px;background:white;padding:16px} .overview{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+  .muted{color:#526479;font-size:13px} .actions{display:flex;gap:8px;flex-wrap:wrap} .button{border:1px solid #cbd5e1;border-radius:8px;padding:8px 13px;background:white;color:#0b4d82;font-weight:650;text-decoration:none;display:inline-block} .primary{background:#07558c;border-color:#07558c;color:white}
+  dialog{border:1px solid #dbe4ee;border-radius:16px;padding:0;width:min(980px,calc(100% - 20px));max-height:92dvh;color:inherit;box-shadow:0 20px 70px #0b234055} dialog::backdrop{background:#0b2340aa;backdrop-filter:blur(2px)} dialog[open]{display:flex;flex-direction:column}
+  .heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;background:#07558c;color:white;padding:16px 20px;border-bottom:3px solid #facc15} .heading h2{font-size:21px} .heading p{color:#dbeafe;font-size:13px} .close{background:#ffffff19;color:white;border:0;border-radius:8px;font-size:23px;width:40px;height:40px;flex:none} .scroll{overflow:auto;overscroll-behavior:contain;padding:18px;background:#f8fafc;display:grid;gap:13px} body:has(dialog[open]){overflow:hidden}
+  .badge{display:inline-block;background:#dbeafe;color:#154777;padding:3px 9px;border-radius:6px;font-weight:700;font-size:12px} dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 0} dt{font-size:12px;color:#526479} dd{margin:0;font-weight:650;overflow-wrap:anywhere}
+  .task{border:1px solid #badcf4;border-left:5px solid #1375ac;background:#eff8ff;scroll-margin-top:3px} .task form{display:grid;gap:8px;margin-top:12px} textarea,select{width:100%;padding:8px;border:1px solid #afbfd1;border-radius:7px;background:white} .tabs{display:flex;gap:5px;background:#eef2f6;padding:4px;border-radius:8px;margin-bottom:12px} .tabs button{background:none;color:#344963;border:0;padding:7px 12px;border-radius:6px} .tabs button[aria-pressed="true"]{background:white;color:#07558c;font-weight:700;border-bottom:2px solid #07558c}
+  .doc{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #e2e8f0} iframe{width:100%;height:55vh;border:1px solid #cbd5e1;margin-top:8px} .timeline{list-style:none;margin:0;padding:0 0 0 8px} .timeline li{position:relative;border-left:2px solid #bfdbfe;padding:0 0 14px 15px} .timeline li::before{content:"";position:absolute;left:-7px;top:4px;width:9px;height:9px;border:2px solid #1375ac;border-radius:50%;background:white} summary{font-weight:650} details .muted{margin-top:6px} [hidden]{display:none!important}
+  @media(max-width:590px){dl{grid-template-columns:repeat(2,minmax(0,1fr))}.scroll{padding:10px}.heading{padding:12px}.heading h2{font-size:18px}}
+
+  body{color:#18181b;background:#f5f5f5;font-family:Geist,"Segoe UI",sans-serif}
+  .top{background:white;color:#263448;border-bottom:1px solid #e4e4e7} main{max-width:1180px}
+  dialog{width:min(820px,calc(100% - 20px));max-height:calc(100dvh - 18px);background:#f9f8f8;border-radius:14px}
+  dialog::backdrop{background:#211d1bc2;backdrop-filter:blur(1px)}
+  .heading{display:block;padding:14px 28px 19px;background:#f4f2f2;color:#141414;border-bottom:1px solid #e7e5e4}
+  .modal-title{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e4e4e7;padding-bottom:8px;margin-bottom:13px}
+  .heading h2{font-size:clamp(21px,3vw,30px);margin:8px 0 4px;letter-spacing:-.03em}
+  .heading p{color:#3f3f46}.close{background:transparent;color:#27272a}
+  .id-chip{display:inline-flex;align-items:center;border-radius:8px;background:#e4e4e7;font-size:13px;font-weight:650;padding-left:10px}
+  .id-chip button{border:0;border-left:1px solid #d4d4d8;background:transparent;padding:3px 10px;margin-left:8px;color:#27272a}
+  .scroll{background:#faf9f9;padding:16px 22px;gap:16px}
+  .box{border-color:#c9c9cf;border-radius:9px;padding:14px 16px}
+  h3{font-size:21px;letter-spacing:-.025em}.muted,dt{color:#52525b}
+  dl{gap:12px 22px} dt{font-size:13px} dd{font-size:15px}
+  .description{margin-top:14px;padding-top:10px;border-top:1px solid #e4e4e7}
+  .badge{border-radius:20px;background:#d7effc;color:#005783}.ok{background:#dcf8de;color:#166534}
+  .task{background:#e1f3fd;border:1.5px solid #006fa9;border-radius:13px;padding:15px 20px}
+  .task-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .task-label{font-weight:750;color:#005783}.role{border:1px solid #b2d5e8;border-radius:20px;padding:3px 10px;font-size:13px;color:#06446b}
+  .checks{list-style:none;margin:12px 0;padding:0;border-top:1px solid #b8d7e8}
+  .checks li{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #b8d7e8;padding:7px 0}
+  .checks .mark{color:#006293;font-weight:750;margin-right:10px}.button:disabled{background:#a1a9b5;color:white;border-color:transparent;cursor:not-allowed}
+  .tabs{background:transparent;border-bottom:1px solid #e4e4e7;border-radius:0;padding:0}
+  .tabs button{color:#27272a;border-radius:0;padding:7px 10px 9px}
+  .tabs button[aria-pressed="true"]{color:#006293;border-bottom:2px solid #006293}
+  .doc-head,.doc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(55px,.45fr) minmax(0,1fr);gap:8px;align-items:center;padding:7px 10px}
+  .doc-head{background:#eeeded;font-weight:700;border-radius:7px 7px 0 0}
+  .doc .actions{justify-content:flex-end}.doc .button{border:none;padding:2px 0;font-size:13px;color:#006293}
+  .timeline li{padding-bottom:8px;margin-bottom:6px}.timeline time{color:#52525b;font-size:13px}
+  .stages{display:grid;gap:8px}.stages summary{display:flex;align-items:flex-start;gap:10px;list-style:none}.stages summary::before{content:"\203A";font-size:22px;line-height:1.1}.stages details[open] summary::before{transform:rotate(90deg)}.stages .badge{margin-left:auto}
+  .stage-note{margin:8px 0 0 20px;padding:8px 10px;background:#eff2f4;border-radius:7px}
+  @media(max-width:590px){.heading{padding:10px 12px}.scroll{padding:10px}.box,.task{padding:11px}.doc-head,.doc{grid-template-columns:minmax(0,1fr) auto}.doc .actions{grid-column:1/-1;justify-content:flex-start}}
+  .event-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .event-line time{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  .doc .actions{gap:10px}.doc .actions button+button{border-left:1px solid #cbd5e1;padding-left:10px}
+  .pdf-viewer{margin-top:12px;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#f8fafc}
+  .pdf-viewer nav button[aria-pressed="true"]{background:#07558c;color:white;border-color:#07558c}
+  .viewer-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px}
+  @media(max-width:590px){.event-line time{white-space:normal}.event-line strong{min-width:0}.id-chip{overflow-wrap:anywhere}}
+
+  .history-page{max-width:820px;padding-top:18px}
+  .history-filters{display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+  .history-filters label{font-size:13px;font-weight:650;flex:1;min-width:min(220px,100%)}
+  .history-filters select{margin-top:4px}
+  .group-list{display:grid;gap:10px;margin-top:12px}
+  .group-list details{padding:12px 14px}
+  .group-list summary{display:flex;justify-content:space-between;gap:8px}
+  .group-list summary::before{content:"\203A";color:#07558c}.group-list summary span:first-of-type{flex:1}
+  .group-list .timeline{margin-top:14px}
+  .group-list .timeline li:last-child{border-left-color:transparent}
+  .event-note{margin-top:4px;font-size:13px}
+  .history-header{margin-bottom:14px}
+  .doc-head,.doc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(55px,.45fr) minmax(0,1fr);gap:8px;align-items:center;padding:7px 10px}
+  .doc-head{background:#eeeded;font-weight:700;border-radius:7px 7px 0 0}
+  .doc .actions{justify-content:flex-end}.doc .button{border:none;padding:2px 0;font-size:13px;color:#006293}
+  @media(max-width:590px){.doc-head,.doc{grid-template-columns:minmax(0,1fr) auto}.doc .actions{grid-column:1/-1;justify-content:flex-start}}
+  .doc .actions button+button{border-left:1px solid #cbd5e1;padding-left:10px}
+  .document-viewer{margin-top:12px;padding:12px;border:1px solid #cbd5e1;border-radius:9px}
+  .document-viewer nav{flex-wrap:nowrap;overflow:auto;padding-bottom:6px}
+  .document-viewer nav button{flex:none}
+  .document-viewer [aria-pressed="true"]{background:#07558c;color:white}
+  .document-viewer .viewer-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0}
+  .document-viewer button:disabled{opacity:.45;cursor:not-allowed}
+  .doc-condition{display:block;margin-top:4px}
+  .doc-condition .badge{background:#fef3c7;color:#78350f}
+</style>
+</head>
+<body>
+<header class="top">PLN WORKSPACE &middot; IWOMS</header>
+<main class="history-page">
+  <div class="history-header"><p class="muted">Preview Detail WO</p><h1>Riwayat WO</h1><p class="muted">WO-DEMO-048 &middot; Pemeliharaan Insulator Penegang Fasa R</p></div>
+  <section class="box" aria-label="Riwayat dan pilihan skenario">
+    <div class="history-filters">
+      <label>Skenario
+        <select id="scenario">
+          <option value="normal">Jalur normal &mdash; WO Completed</option>
+          <option value="active">Sedang berjalan &mdash; menunggu penilaian survei</option>
+          <option value="proposal">Usulan dikembalikan dan diajukan ulang</option>
+          <option value="survey-repeat">Survei diulang lalu dinyatakan layak</option>
+          <option value="stop">Survei tidak layak &mdash; WO dihentikan</option>
+          <option value="revision">JSA dikembalikan dan disetujui setelah revisi</option>
+          <option value="height">Izin ketinggian dibuka dan ditutup</option>
+          <option value="delegation">Delegasi pengawasan</option>
+          <option value="height-delegation">Izin ketinggian dan delegasi pengawasan</option>
+          <option value="hold">On Hold lalu diaktifkan kembali</option>
+          <option value="cancel-rejected">Usulan pembatalan ditolak</option>
+          <option value="cancel">On Hold lalu WO dibatalkan</option>
+          <option value="swa">SWA lalu pekerjaan dilanjutkan</option>
+          <option value="normalization">Penormalan diulang</option>
+          <option value="file">Berkas penutupan belum lengkap</option>
+        </select>
+      </label>
+      <label id="cause-label" hidden>Penyebab On Hold<select id="cause"></select></label>
+    </div>
+    <nav class="tabs" aria-label="Bagian detail WO">
+      <button type="button" data-panel="documents" aria-pressed="false" aria-controls="documents">Dokumen <span id="document-count" class="badge"></span></button>
+      <button type="button" data-panel="history" aria-pressed="true" aria-controls="history">Riwayat</button>
+    </nav>
+    <div id="documents" hidden>
+      <p id="document-error" role="status" class="muted"></p>
+      <div id="document-list"></div>
+      <div class="actions" aria-label="Mode dokumen" style="align-items:center;margin:10px 0">
+        <label for="document-mode">Mode dokumen</label>
+        <select id="document-mode" style="width:auto">
+          <option value="filled">Terisi data WO</option>
+          <option value="blank">Blangko kosong</option>
+        </select>
+        <span class="muted">Mode ini berlaku untuk pratinjau dan unduhan.</span>
+      </div>
+      <section id="document-viewer" class="document-viewer" aria-label="Pratinjau dokumen" hidden>
+        <nav id="document-titles" class="actions" aria-label="Pilih dokumen"></nav>
+        <div class="viewer-controls">
+          <button id="document-prev" class="button" type="button" aria-label="Dokumen sebelumnya">&lt;</button>
+          <span id="document-position"></span>
+          <button id="document-next" class="button" type="button" aria-label="Dokumen berikutnya">&gt;</button>
+        </div>
+        <h3 id="document-title" tabindex="-1"></h3>
+        <p id="document-note" class="muted" role="status"></p>
+        <button id="download-preview" type="button" class="button" disabled>Unduh PDF</button>
+        <iframe id="document-pdf" title="Template dokumen" hidden></iframe>
+      </section>
+    </div>
+    <div id="history">
+    <p id="result" class="muted" aria-live="polite"></p>
+    <div id="groups" class="group-list"></div>
+    </div>
+  </section>
+  <p style="margin-top:14px"><a class="button" href="preview-detail-wo.html">Kembali ke preview Detail WO</a></p>
+</main>
+<script src="assets/vendor/pdf-lib-1.17.1.min.js"></script>
+<script src="app/preview-wo-pdf.js"></script>
+<script>
+const actors={
+  TL:['Budi Demo','TL HAR'], A:['Rina Demo','Asman Jaringan'], S:['Dimas Demo','Supervisor PDKB'],
+  M:['Arif Demo','Manajer Area / Kepala Operasi'], P:['Rian Demo','Preparator PDKB'],
+  K:['Maya Demo','P2K3/K3L'], B:['Wahyu Demo','Bagian Terkait'], K3:['Ayu Demo','Pengawas K3 PDKB'],
+  R:['Sugeng Demo','Kepala Regu PDKB'], L:['Agus Demo','Pelaksana PDKB'],
+  PA:['Nisa Demo','Piket Area'], APD:['Fajar Demo','Piket APD'], GI:['Putri Demo','Petugas GI'],
+};
+const catalog=[
+ ['Pengajuan & Persetujuan WO',[
+  'WO diajukan|TL','Usulan disetujui Asman|A','Usulan disetujui Supervisor|S','Usulan disahkan|M','Prioritas dan rencana kerja ditetapkan|S']],
+ ['Survei & Rencana Pelaksanaan',[
+  'Hasil survei lokasi dicatat|P','Analisis awal JSA dan IBPPR disusun|P','Pekerjaan dinyatakan layak|S','Jadwal, personel, dan metode kerja ditetapkan|P']],
+ ['Dokumen, Kewenangan & Serah Terima',[
+  'JSA diajukan|P','JSA diperiksa dan diteruskan|K','JSA disetujui|A',
+  'IBPPR diajukan|P','IBPPR diperiksa dan diteruskan|K','IBPPR disetujui|A',
+  'Surat Kewenangan dan kompetensi personel dinyatakan valid|P',
+  'SP2B diajukan|P','SP2B diperiksa dan ditandatangani|S','SP2B diterbitkan|M',
+  'SP3B diajukan|P','SP3B diperiksa dan ditandatangani|S','SP3B diterbitkan|M',
+  'Checklist peralatan dan material diajukan|P','Checklist diperiksa dan ditandatangani|S','Checklist diperiksa dan ditandatangani Kepala Regu|R',
+  'SP2B diserahkan|P','SP2B diterima dan ditandatangani|L','Tanda terima SP2B dicatat|P',
+  'SP3B diserahkan|P','Penugasan pengawasan diterima|R','Penugasan K3 diterima|K3']],
+ ['Kesiapan Lapangan & SOK Awal',[
+  'Pemeriksaan ulang diperintahkan|R','Hasil cek alat, material, dan APD dicatat|L','Job briefing dicatat|R',
+  'Hasil pemeriksaan kesehatan, APD, dan safety briefing dicatat|K3','Rencana mulai dikoordinasikan|R',
+  'Pemberlakuan SOK diminta|R','Permintaan diteruskan ke APD|PA','Permintaan dikoordinasikan ke GI|APD',
+  'Hasil pengaturan SOK dicatat|GI','Hasil diteruskan ke Area|APD','Hasil disampaikan ke Kepala Regu|PA',
+  'SOK dinyatakan terkonfirmasi|R','Kondisi awal dinyatakan memenuhi|R']],
+ ['Pelaksanaan & Pengawasan',[
+  'Putaran pelaksanaan dimulai|R','Laksanakan pekerjaan sesuai SP2B/SOP|L|Tugas paralel','Koordinasikan pengawasan pekerjaan|R|Tugas paralel',
+  'Awasi K3 selama pekerjaan|K3|Tugas paralel','Tidak ada kondisi tidak aman|K3','Pekerjaan fisik dinyatakan selesai|R','Selesai fisik dilaporkan|L']],
+ ['Penormalan & Selesai Operasional',[
+  'Penormalan diminta|R','Permintaan diteruskan ke APD|PA','Permintaan diteruskan ke GI|APD',
+  'Hasil penormalan dicatat|GI','Hasil dikonfirmasi ke Area|APD','Hasil dikonfirmasi ke Kepala Regu|PA',
+  'Penormalan dinyatakan terkonfirmasi|R','Pekerjaan dinyatakan selesai operasional|R']],
+ ['Laporan & Penutupan Administrasi',[
+  'Laporan hasil diserahkan|R','Pemberitahuan penyelesaian diajukan|P','Pemberitahuan diperiksa dan ditandatangani|S',
+  'Pemberitahuan ditandatangani sebagai Pengawas Pekerjaan|R','Pemberitahuan ditandatangani|K3',
+  'Pemberitahuan disampaikan ke Kepala Operasi|P','Pemberitahuan diterima|M','Laporan kinerja harian diinput|P',
+  'Berkas pekerjaan dikumpulkan|P','Dokumen dan tanda tangan dinyatakan lengkap|P','Paket dokumen diarsipkan|P','Administrasi ditutup|P']],
+];
+const holds=[
+ ['JSA',2,2,'P','Ajukan JSA untuk diperiksa'],
+ ['IBPPR',2,5,'P','Ajukan IBPPR untuk diperiksa'],
+ ['Izin ketinggian',2,6,'P','Siapkan ulang izin'],
+ ['Surat Kewenangan',2,6,'P','Verifikasi kewenangan'],
+ ['SP2B',2,9,'P','Susun dan ajukan kembali SP2B'],
+ ['SP3B',2,12,'P','Susun dan ajukan kembali SP3B'],
+ ['Checklist',2,15,'P','Isi dan periksa kembali checklist'],
+ ['Alat atau material lapangan',3,2,'P','Perintahkan cek ulang peralatan'],
+ ['Konfirmasi SOK awal',3,11,'R','Minta pemberlakuan SOK kembali'],
+ ['Kondisi awal',3,12,'R','Periksa cuaca, kondisi aman, dan SOK'],
+ ['Penerima delegasi',3,13,'P','Verifikasi kompetensi calon'],
+ ['Bahaya saat pelaksanaan',4,4,'R','Periksa cuaca, kondisi aman, dan SOK'],
+];
+const documentCatalog=[
+  {name:'Form Survei', event:/^Hasil survei (lokasi|ulang) dicatat/},
+  {name:'JSA', event:/^JSA diajukan/},
+  {name:'IBPPR', event:/^IBPPR diajukan/},
+  {name:'Izin Kerja Ketinggian', event:/^Izin ketinggian diperlukan dan diajukan/, completion:/^Penutupan izin dicatat/, condition:'Jika pekerjaan memerlukan izin ketinggian'},
+  {name:'Surat Kewenangan personel', event:/^Surat Kewenangan (dan kompetensi|dikumpulkan)/},
+  {name:'SP2B', event:/^SP2B diajukan/},
+  {name:'SP3B', event:/^SP3B diajukan/},
+  {name:'Checklist peralatan dan material', event:/^Checklist peralatan dan material diajukan/},
+  {name:'Berita Acara Delegasi', event:/^BA delegasi disiapkan/, condition:'Jika pengawasan didelegasikan'},
+  {name:'Laporan Hasil Pekerjaan', event:/^Laporan hasil diserahkan/},
+  {name:'Pemberitahuan Penyelesaian', event:/^Pemberitahuan penyelesaian diajukan/},
+  {name:'Laporan Kinerja Harian', event:/^Laporan kinerja harian diinput/},
+];
+const scenario=document.querySelector('#scenario');
+const cause=document.querySelector('#cause');
+const labels=document.querySelector('#cause-label');
+holds.forEach(([name],index)=>cause.add(new Option('H'+String(index+1).padStart(2,'0')+' - '+name,index)));
+function build(key){
+  const entries=catalog.map(([,list])=>[...list]);
+  let terminal=-1;
+  let focus=0;
+  if(key==='active'||key==='stop'){
+    focus=1;
+    entries[1].splice(2);
+    entries.fill(null,2);
+    if(key==='stop'){
+      entries[1].push('WO dihentikan karena hasil survei tidak layak|S','Pengusul diberi tahu|S');
+      terminal=1;
+    }
+  }
+  if(key==='proposal') {
+    focus=0;
+    entries[0].splice(1,0,'Usulan dikembalikan|A|Lokasi aset perlu diperjelas.','Penolakan diteruskan ke TL pengusul asal|A','Usulan direvisi dan diajukan ulang|TL|Versi 2');
+  }
+  if(key==='survey-repeat'){
+    focus=1;
+    entries[1].splice(2,0,'Survei ulang diminta|S','Hasil survei ulang dicatat|P','Analisis awal JSA dan IBPPR diperbarui|P');
+  }
+  if(key==='revision'){
+    focus=2;
+    entries[2].splice(2,0,'JSA dikembalikan|A|Versi 1 dikembalikan untuk dilengkapi.','JSA diperbaiki|P','JSA diajukan kembali|P|Versi 2','JSA diperiksa ulang dan diteruskan|K|Versi 2');
+  }
+  if(['height','height-delegation'].includes(key)){
+    focus=2;
+    entries[2].splice(6,0,'Izin ketinggian diperlukan dan diajukan|P','Izin diperiksa Pengawas K3|K3','Izin ditandatangani Asman|A','Izin ditandatangani P2K3/K3L|K','Izin ditandatangani Bagian Terkait|B','Izin lengkap dicatat|P');
+    entries[6].unshift('Penutupan izin disiapkan|P','Penutupan izin ditandatangani Pengawas K3|K3','Penutupan izin ditandatangani Asman|A','Penutupan izin ditandatangani P2K3/K3L|K','Penutupan izin ditandatangani Bagian Terkait|B','Penutupan izin dicatat|P');
+  }
+  if(['delegation','height-delegation'].includes(key)){
+    focus=3;
+    entries[3].push('Delegasi pengawasan diperlukan|R','Kompetensi calon diverifikasi|S','BA delegasi disiapkan dan ditandatangani|R','BA delegasi diterima dan ditandatangani|L','BA ditandatangani sebagai pihak mengetahui|S','BA delegasi diarsipkan|P');
+  }
+  if(['hold','cancel','cancel-rejected'].includes(key)){
+    const [label,group,offset,owner,resume]=holds[Number(cause.value)];
+    const id='H'+String(Number(cause.value)+1).padStart(2,'0');
+    focus=group;
+    const notes=['WO ditahan|S|'+id+' - '+label,'Pemenuhan kendala dikoordinasikan|'+owner];
+    if(key==='hold')notes.push('Kendala teratasi|S','WO diaktifkan kembali|S|Tugas berikutnya: '+resume);
+    else notes.push('Kendala tidak dapat diselesaikan|S','Pembatalan WO diusulkan|S');
+    if(key==='cancel'){
+      notes.push('Pembatalan disetujui|M','WO dibatalkan|M');
+      terminal=group;
+    }
+    if(key==='cancel-rejected')notes.push('Pembatalan ditolak|M','Pemenuhan kendala dilanjutkan|'+owner);
+    const beforeHold = {
+      1:['JSA dikembalikan untuk perbaikan|A','JSA belum dapat diperbaiki|P'],
+      2:['IBPPR dikembalikan untuk perbaikan|A','IBPPR belum dapat diperbaiki|P'],
+      3:['Izin ketinggian diperlukan dan diajukan|P','Izin dikembalikan|K3','Izin belum dapat diperbaiki|P'],
+      4:['Surat Kewenangan dikumpulkan|P','Masa berlaku atau kompetensi belum memenuhi|P'],
+      5:['SP2B dikembalikan|S','SP2B belum dapat diperbaiki|P'],
+      6:['SP3B dikembalikan|S','SP3B belum dapat diperbaiki|P'],
+      7:['Checklist dikembalikan|S','Checklist belum dapat diperbaiki|P'],
+      8:['Alat atau material belum siap|L'],
+      9:['SOK belum terkonfirmasi dan koordinasi tidak dapat diulang|R'],
+      10:['Kondisi awal tidak aman|R','Rencana mulai dihentikan dan risiko dievaluasi|R','Risiko dan keselamatan diperiksa ulang|K3'],
+      11:['Delegasi pengawasan diperlukan|R','Kompetensi calon diverifikasi|S','Calon kompeten belum tersedia|S'],
+      12:['Kondisi tidak aman teridentifikasi|K3','Pekerjaan dihentikan sementara|R','Aktivitas dihentikan dan lokasi diamankan|L','Bahaya dievaluasi|K3','Syarat aman belum terpenuhi|R'],
+    };
+    entries[group].splice(offset,Infinity,...beforeHold[Number(cause.value)+1],...notes);
+    entries.fill(null,group+1);
+  }
+  if(key==='swa'){
+    focus=4;
+    entries[4].splice(4,0,'Kondisi tidak aman teridentifikasi|K3','Pekerjaan dihentikan sementara|R','Aktivitas dihentikan dan lokasi diamankan|L','Bahaya dievaluasi|K3','Syarat aman terpenuhi|R','Putaran pelaksanaan dilanjutkan|R',...entries[4].slice(1,4).map(event=>event.replace('Tugas paralel','Tugas paralel, putaran 2')));
+  }
+  if(key==='normalization'){
+    focus=5;
+    entries[5].splice(6,0,'Penormalan belum terkonfirmasi|R',...entries[5].slice(0,6).map(value=>value+'|Putaran 2'));
+  }
+  if(key==='file'){
+    focus=6;
+    entries[6].splice(-3,0,'Dokumen dan tanda tangan diperiksa|P','Kelengkapan berkas diminta|P','Dokumen yang dilengkapi diverifikasi|P','Dokumen dan tanda tangan diperiksa kembali|P');
+  }
+  return {entries,terminal,focus};
+}
+function element(tag,cls,text){
+  const node=document.createElement(tag);
+  if(cls)node.className=cls;
+  if(text)node.textContent=text;
+  return node;
+}
+
+const documentList=document.querySelector('#document-list');
+const viewer=document.querySelector('#document-viewer');
+const pdf=document.querySelector('#document-pdf');
+const previousDocument=document.querySelector('#document-prev');
+const nextDocument=document.querySelector('#document-next');
+let availableDocuments=[];
+let selectedDocument=-1;
+let selectedUrl;
+let previewRequest=0;
+let documentEvents=[];
+const formatter=new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'});
+const dateFormatter=new Intl.DateTimeFormat('id-ID',{dateStyle:'long',timeZone:'Asia/Jakarta'});
+const modeSelector=document.querySelector('#document-mode');
+const downloadPreview=document.querySelector('#download-preview');
+const note=document.querySelector('#document-note');
+const generated=new Map();
+function eventDate(index){
+  return new Date(Date.UTC(2026,10,20,1,0)+index*3600000);
+}
+function generateDocument(item){
+  const mode=modeSelector.value;
+  const key=mode+':'+item.name;
+  if(!generated.has(key)){
+    generated.set(key,PreviewWoPdf.create(item,mode,PreviewWoPdf.workOrder,documentEvents)
+      .catch(error=>{generated.delete(key);throw error;}));
+  }
+  return generated.get(key);
+}
+function resetPdf(){
+  downloadPreview.disabled=true;
+  pdf.hidden=true;
+  pdf.removeAttribute('src');
+  if(selectedUrl)URL.revokeObjectURL(selectedUrl);
+  selectedUrl=null;
+}
+async function downloadDocument(item,button){
+  button.disabled=true;
+  try {
+    const result=await generateDocument(item);
+    const url=URL.createObjectURL(result.blob);
+    const link=element('a');
+    link.href=url;
+    link.download=result.filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  } catch(error){
+    document.querySelector('#document-error').textContent=error.message;
+  } finally {button.disabled=false;}
+}
+modeSelector.addEventListener('change',()=>{
+  if(selectedDocument>=0)openDocument(selectedDocument);
+});
+downloadPreview.addEventListener('click',()=>{
+  const item=availableDocuments[selectedDocument];
+  if(item)downloadDocument(item,downloadPreview);
+});
+
+async function openDocument(index){
+  const item=availableDocuments[index];
+  if(!item)return;
+  const request=++previewRequest;
+  selectedDocument=index;
+  viewer.hidden=false;
+  resetPdf();
+  document.querySelector('#document-title').textContent=item.name;
+  note.textContent='Menyiapkan PDF...';
+  document.querySelector('#document-position').textContent=(index+1)+' / '+availableDocuments.length;
+  previousDocument.disabled=index===0;
+  nextDocument.disabled=index===availableDocuments.length-1;
+  document.querySelectorAll('#document-titles button').forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+  document.querySelectorAll('#document-list [data-document-index]').forEach(button=>{
+    const active=Number(button.dataset.documentIndex)===index;
+    button.textContent=active?'Tutup pratinjau':'Lihat pratinjau';
+    button.setAttribute('aria-expanded',String(active));
+  });
+  try {
+    const result=await generateDocument(item);
+    if(request!==previewRequest)return;
+    selectedUrl=URL.createObjectURL(result.blob);
+    pdf.src=selectedUrl;
+    pdf.hidden=false;
+    downloadPreview.disabled=false;
+    note.textContent=result.isDemoForm?'Formulir demo BPMN. Template sumber belum tersedia.':'Pratinjau berdasarkan formulir sumber.';
+  } catch(error){
+    if(request===previewRequest)note.textContent=error.message;
+  }
+}
+function closeDocument(){
+  selectedDocument=-1;
+  previewRequest++;
+  viewer.hidden=true;
+  resetPdf();
+  document.querySelectorAll('#document-list [data-document-index]').forEach(button=>{
+    button.textContent='Lihat pratinjau';
+    button.setAttribute('aria-expanded','false');
+  });
+}
+function renderDocuments(entries){
+  closeDocument();
+  const events=entries.flatMap(items=>items||[]);
+  generated.clear();
+  document.querySelector('#document-error').textContent='';
+  documentEvents=events.map((event,index)=>{
+    const [name,role]=event.split('|');
+    return {name,actor:actors[role][0],date:dateFormatter.format(eventDate(index))};
+  });
+  availableDocuments=documentCatalog.flatMap(doc=>{
+    const versions=events.filter(event=>doc.event.test(event));
+    return versions.length?[{...doc,version:versions.length,completion:doc.completion && events.some(event=>doc.completion.test(event))}]:[];
+  });
+  const visibleDocuments=documentCatalog.filter(doc=>doc.condition || availableDocuments.some(item=>item.name===doc.name));
+  document.querySelector('#document-count').textContent=availableDocuments.length;
+  documentList.replaceChildren();
+  const titles=document.querySelector('#document-titles');
+  titles.replaceChildren();
+  if(!availableDocuments.length){
+    documentList.append(element('p','muted','Belum ada dokumen pada tahap yang ditampilkan.'));
+  }
+  const header=element('div','doc-head');
+  header.append(element('span','','Dokumen'),element('span','','Versi'));
+  documentList.append(header);
+  visibleDocuments.forEach(entry=>{
+    const index=availableDocuments.findIndex(item=>item.name===entry.name);
+    const doc=availableDocuments[index];
+    const row=element('div','doc');
+    const actions=element('div','actions');
+    const identity=element('div');
+    identity.append(element('strong','',entry.name));
+    if(entry.condition){
+      const condition=element('div','doc-condition');
+      condition.append(element('span','badge','Bersyarat'),element('p','muted',entry.condition));
+      identity.append(condition);
+    }
+    if(!doc){
+      row.append(identity,element('span','muted','Belum tersedia'),actions);
+      documentList.append(row);
+      return;
+    }
+    const preview=element('button','button','Lihat pratinjau');
+    preview.type='button';
+    preview.dataset.documentIndex=String(index);
+    preview.setAttribute('aria-controls','document-viewer');
+    preview.setAttribute('aria-expanded','false');
+    preview.addEventListener('click',()=>{
+      if(selectedDocument===index)closeDocument();
+      else {
+        openDocument(index);
+        document.querySelector('#document-title').focus();
+      }
+    });
+    actions.append(preview);
+    const download=element('button','button','Unduh');
+    download.type='button';
+    download.setAttribute('aria-label','Unduh '+doc.name+' (PDF)');
+    download.addEventListener('click',()=>downloadDocument(doc,download));
+    actions.append(download);
+    row.append(identity,element('span','','Versi '+doc.version),actions);
+    documentList.append(row);
+  });
+  availableDocuments.forEach((doc,index)=>{
+    const title=element('button','button',doc.name);
+    title.type='button';
+    title.setAttribute('aria-pressed','false');
+    title.addEventListener('click',()=>openDocument(index));
+    titles.append(title);
+  });
+}
+previousDocument.addEventListener('click',()=>openDocument(selectedDocument-1));
+nextDocument.addEventListener('click',()=>openDocument(selectedDocument+1));
+document.querySelectorAll('[data-panel]').forEach(tab=>tab.addEventListener('click',()=>{
+  document.querySelectorAll('[data-panel]').forEach(button=>{
+    const active=button===tab;
+    button.setAttribute('aria-pressed',String(active));
+    document.getElementById(button.dataset.panel).hidden=!active;
+  });
+}));
+
+function render(){
+  const key=scenario.value;
+  labels.hidden=!['hold','cancel','cancel-rejected'].includes(key);
+  const {entries,terminal,focus}=build(key);
+  renderDocuments(entries);
+  const groups=document.querySelector('#groups');
+  groups.replaceChildren();
+  let eventNumber=0;
+  for(const [index,[title]] of catalog.entries()){
+    const events=entries[index]||[];
+    const groupStatus=terminal===index?'Berakhir':focus===index&&['active','hold','cancel-rejected'].includes(key)?'Sedang berjalan':events.length?'Selesai':terminal<0?'Belum dimulai':'Tidak dijalankan';
+    const row=element('details','box');
+    row.open=index===focus;
+    const heading=element('summary');
+    heading.append(element('span','',title),element('span','badge'+(groupStatus==='Selesai'?' ok':''),groupStatus));
+    row.append(heading);
+    if(!events.length)row.append(element('p','muted','Belum ada kejadian tercatat.'));
+    else{
+      const list=element('ol','timeline');
+      for(const event of events){
+        const [name,actor,note]=event.split('|');
+        const date=eventDate(eventNumber++);
+        const item=element('li');
+        const line=element('div','event-line');
+        const time=element('time','',formatter.format(date)+' WIB');
+        time.dateTime=date.toISOString();
+        line.append(element('strong','',name),time);
+        item.append(line,element('p','muted',actors[actor].join(String.fromCharCode(32,183,32))));
+        if(note)item.append(element('p','event-note',note));
+        list.append(item);
+      }
+      row.append(list);
+    }
+    groups.append(row);
+  }
+  document.querySelector('#result').textContent=catalog.length+' kelompok tahap, '+eventNumber+' kejadian pada skenario ini.';
+}
+scenario.addEventListener('change',render);
+cause.addEventListener('change',render);
+render();
+</script>
+</body>
+</html>

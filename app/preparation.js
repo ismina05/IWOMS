@@ -1,5 +1,6 @@
 (function (global) {
   'use strict';
+  const details = typeof module !== 'undefined' && module.exports ? require('./document-details.js') : global.IwomsDocumentDetails;
   const graph = typeof module !== 'undefined' && module.exports ? require('./preparation-graph.js') : global.IwomsPreparationGraph;
   const fieldPreparation = typeof module !== 'undefined' && module.exports ? require('./field-preparation.js') : global.IwomsFieldPreparation;
   const execution = typeof module !== 'undefined' && module.exports ? require('./execution.js') : global.IwomsExecution;
@@ -58,6 +59,11 @@
       for (const key of ['personId', 'name', 'duty', 'requiredCompetence', 'certificateNo', 'competence', 'validFrom', 'validUntil', 'evidence']) {
         if (typeof person[key] !== 'string' || !person[key].trim()) fail('Lengkapi identitas, tugas, kompetensi, surat dan bukti setiap personel.');
         row[key] = person[key].trim();
+      }
+      if(person.certificateFile){
+        const {name,content}=person.certificateFile;
+        if(typeof name!=='string' || !name.trim() || typeof content!=='string' || content.length>700000 || !/^data:(application\/pdf|image\/(png|jpeg));base64,[A-Za-z0-9+/=]+$/.test(content))fail('Surat asli harus berupa PDF, PNG, atau JPEG maksimal 512 KB.');
+        row.certificateFile={name:name.trim().slice(0,200),content};
       }
       if (!validDate(row.validFrom) || !validDate(row.validUntil) || row.validUntil < row.validFrom) fail('Masa berlaku surat tidak valid.');
       return row;
@@ -158,8 +164,19 @@
         if (type === 'EQUIPMENT_CHECKLIST' && latestDocument(state, wo, 'SP3B')?.status !== 'issued') fail('SP3B harus terbit terlebih dahulu.');
         if (type === 'IBPPR' && latestDocument(state, wo, 'JSA')?.status !== 'approved') fail('JSA harus disetujui lebih dahulu.');
         if (type === 'HEIGHT_PERMIT' && wo.heightRequired !== true) fail('Keputusan kebutuhan izin belum tercatat.');
-        for (const key of config.fields) requireText(key, labels[key]);
-        const payload = Object.fromEntries(config.fields.map(key => [key, data[key].trim()]));
+        const rows = details.rows(type, data, fail);
+        const values = {...data};
+        if (rows.length && ['JSA','IBPPR'].includes(type)) {
+          for(const key of config.fields) values[key]=rows.map(row=>row[key]).join(' / ');
+        }
+        if (rows.length && type==='HEIGHT_PERMIT') values.workers=rows.map(row=>row.name).join(', ');
+        for (const key of config.fields) {
+          if(typeof values[key]!=='string' || !values[key].trim())fail('Isi '+labels[key]+'.');
+        }
+        const payload = {...Object.fromEntries(config.fields.map(key => [key, values[key].trim()])),...details.extras(type,data,fail)};
+        if(rows.length)payload.rows=rows;
+        if(type==='JSA')payload.jsaChecks=details.checklist(data,fail);
+        if(type==='HEIGHT_PERMIT')payload.heightCheckAnswers=details.permitChecks(data,fail);
         let items;
         if (config.checklist) {
           if (!Array.isArray(data.items) || !data.items.length) fail('Isi daftar peralatan dan material.');
@@ -173,7 +190,10 @@
         const record = { id: global.crypto.randomUUID(), woId: wo.id, type, version: (latest?.version || 0) + 1, status: 'submitted', payload,
           sourceSurveyVersion: wo.surveyVersions.length, planSnapshot: copy(wo.plan), submittedBy: actor.id, submittedByName: actor.name, submittedAt: now, decisions: [], fileIds: state.documents.filter(doc => doc.woId === wo.id && doc.type === 'support-file' && doc.documentType === type && doc.forVersion === (latest?.version || 0) + 1).map(doc => doc.id) };
         state.documents.push(record); wo.documentIds.push(record.id);
-        if (items) record.items = items;
+        if (items) {
+          record.items=items;
+          record.sourceSp3bId=latestDocument(state,wo,'SP3B').id;
+        }
         if (['SP2B', 'SP3B'].includes(type)) {
           record.rosterSnapshot = copy(wo.authorityRoster); record.sourceRosterVersion = wo.authorityRoster.version; record.sourceSp2bId = type === 'SP3B' ? latestDocument(state, wo, 'SP2B').id : null;
           if (type === 'SP3B') { const source = latestDocument(state, wo, 'SP2B'); record.payload.circuit = source.payload.circuit; record.payload.workLocation = source.payload.workLocation; }
@@ -190,7 +210,7 @@
         if (!review) fail('Dokumen belum berada di tahap pemeriksaan.');
         const approved = action === 'document-approve';
         if (!approved) requireText('reason', 'alasan pengembalian');
-        latest.decisions.push({ id: global.crypto.randomUUID(), result: approved ? 'approved' : 'rejected', actorId: actor.id, actorName: actor.name, role: actor.role, nodeId: origin, at: now, reason: data.reason || '' });
+        latest.decisions.push({ id: global.crypto.randomUUID(), result: approved ? 'approved' : 'rejected', actorId: actor.id, actorName: actor.name, role: actor.role, nodeId: origin, at: now, reason: data.reason || '', ...(approved?details.signature(data,fail):{}) });
         if (!approved) { latest.status = 'rejected'; latest.rejectedReason = data.reason; follow(review[1], config.revise); }
         else {
           if (origin === config.asman || (config.reviews && origin === config.reviews.at(-1)[0])) {

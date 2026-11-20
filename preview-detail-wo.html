@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview Detail WO | IWOMS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap">
+<style>
+
+  *{box-sizing:border-box} body{margin:0;background:#f1f5f9;color:#17283e;font:15px/1.5 "Segoe UI",sans-serif} h1,h2,h3,p{margin:0} h3{font-size:16px} button,select,textarea{font:inherit} button,a,summary{cursor:pointer} button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #0284c7;outline-offset:3px}
+  .top{background:#0b2340;color:white;padding:16px max(20px,5vw);border-bottom:3px solid #facc15;font-weight:700} main{max-width:1080px;margin:auto;padding:30px 16px} .box{border:1px solid #dbe4ee;border-radius:13px;background:white;padding:16px} .overview{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+  .muted{color:#526479;font-size:13px} .actions{display:flex;gap:8px;flex-wrap:wrap} .button{border:1px solid #cbd5e1;border-radius:8px;padding:8px 13px;background:white;color:#0b4d82;font-weight:650;text-decoration:none;display:inline-block} .primary{background:#07558c;border-color:#07558c;color:white}
+  dialog{border:1px solid #dbe4ee;border-radius:16px;padding:0;width:min(980px,calc(100% - 20px));max-height:92dvh;color:inherit;box-shadow:0 20px 70px #0b234055} dialog::backdrop{background:#0b2340aa;backdrop-filter:blur(2px)} dialog[open]{display:flex;flex-direction:column}
+  .heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;background:#07558c;color:white;padding:16px 20px;border-bottom:3px solid #facc15} .heading h2{font-size:21px} .heading p{color:#dbeafe;font-size:13px} .close{background:#ffffff19;color:white;border:0;border-radius:8px;font-size:23px;width:40px;height:40px;flex:none} .scroll{overflow:auto;overscroll-behavior:contain;padding:18px;background:#f8fafc;display:grid;gap:13px} body:has(dialog[open]){overflow:hidden}
+  .badge{display:inline-block;background:#dbeafe;color:#154777;padding:3px 9px;border-radius:6px;font-weight:700;font-size:12px} dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 0} dt{font-size:12px;color:#526479} dd{margin:0;font-weight:650;overflow-wrap:anywhere}
+  .task{border:1px solid #badcf4;border-left:5px solid #1375ac;background:#eff8ff;scroll-margin-top:3px} .task form{display:grid;gap:8px;margin-top:12px} textarea,select{width:100%;padding:8px;border:1px solid #afbfd1;border-radius:7px;background:white} .tabs{display:flex;gap:5px;background:#eef2f6;padding:4px;border-radius:8px;margin-bottom:12px} .tabs button{background:none;color:#344963;border:0;padding:7px 12px;border-radius:6px} .tabs button[aria-pressed="true"]{background:white;color:#07558c;font-weight:700;border-bottom:2px solid #07558c}
+  .doc{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #e2e8f0} iframe{width:100%;height:55vh;border:1px solid #cbd5e1;margin-top:8px} .timeline{list-style:none;margin:0;padding:0 0 0 8px} .timeline li{position:relative;border-left:2px solid #bfdbfe;padding:0 0 14px 15px} .timeline li::before{content:"";position:absolute;left:-7px;top:4px;width:9px;height:9px;border:2px solid #1375ac;border-radius:50%;background:white} summary{font-weight:650} details .muted{margin-top:6px} [hidden]{display:none!important}
+  @media(max-width:590px){dl{grid-template-columns:repeat(2,minmax(0,1fr))}.scroll{padding:10px}.heading{padding:12px}.heading h2{font-size:18px}}
+
+  body{color:#18181b;background:#f5f5f5;font-family:Geist,"Segoe UI",sans-serif}
+  .top{background:white;color:#263448;border-bottom:1px solid #e4e4e7} main{max-width:1180px}
+  dialog{width:min(820px,calc(100% - 20px));max-height:calc(100dvh - 18px);background:#f9f8f8;border-radius:14px}
+  dialog::backdrop{background:#211d1bc2;backdrop-filter:blur(1px)}
+  .heading{display:block;padding:14px 28px 19px;background:#f4f2f2;color:#141414;border-bottom:1px solid #e7e5e4}
+  .modal-title{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e4e4e7;padding-bottom:8px;margin-bottom:13px}
+  .heading h2{font-size:clamp(21px,3vw,30px);margin:8px 0 4px;letter-spacing:-.03em}
+  .heading p{color:#3f3f46}.close{background:transparent;color:#27272a}
+  .id-chip{display:inline-flex;align-items:center;border-radius:8px;background:#e4e4e7;font-size:13px;font-weight:650;padding-left:10px}
+  .id-chip button{border:0;border-left:1px solid #d4d4d8;background:transparent;padding:3px 10px;margin-left:8px;color:#27272a}
+  .scroll{background:#faf9f9;padding:16px 22px;gap:16px}
+  .box{border-color:#c9c9cf;border-radius:9px;padding:14px 16px}
+  h3{font-size:21px;letter-spacing:-.025em}.muted,dt{color:#52525b}
+  dl{gap:12px 22px} dt{font-size:13px} dd{font-size:15px}
+  .description{margin-top:14px;padding-top:10px;border-top:1px solid #e4e4e7}
+  .badge{border-radius:20px;background:#d7effc;color:#005783}.ok{background:#dcf8de;color:#166534}
+  .task{background:#e1f3fd;border:1.5px solid #006fa9;border-radius:13px;padding:15px 20px}
+  .task-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .task-label{font-weight:750;color:#005783}.role{border:1px solid #b2d5e8;border-radius:20px;padding:3px 10px;font-size:13px;color:#06446b}
+  .checks{list-style:none;margin:12px 0;padding:0;border-top:1px solid #b8d7e8}
+  .checks li{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #b8d7e8;padding:7px 0}
+  .checks .mark{color:#006293;font-weight:750;margin-right:10px}.button:disabled{background:#a1a9b5;color:white;border-color:transparent;cursor:not-allowed}
+  .tabs{background:transparent;border-bottom:1px solid #e4e4e7;border-radius:0;padding:0}
+  .tabs button{color:#27272a;border-radius:0;padding:7px 10px 9px}
+  .tabs button[aria-pressed="true"]{color:#006293;border-bottom:2px solid #006293}
+  .doc-head,.doc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(55px,.45fr) minmax(0,1fr);gap:8px;align-items:center;padding:7px 10px}
+  .doc-head{background:#eeeded;font-weight:700;border-radius:7px 7px 0 0}
+  .doc .actions{justify-content:flex-end}.doc .button{border:none;padding:2px 0;font-size:13px;color:#006293}
+  .timeline li{padding-bottom:8px;margin-bottom:6px}.timeline time{color:#52525b;font-size:13px}
+  .stages{display:grid;gap:8px}.stages summary{display:flex;align-items:flex-start;gap:10px;list-style:none}.stages summary::before{content:"\203A";font-size:22px;line-height:1.1}.stages details[open] summary::before{transform:rotate(90deg)}.stages .badge{margin-left:auto}
+  .stage-note{margin:8px 0 0 20px;padding:8px 10px;background:#eff2f4;border-radius:7px}
+  @media(max-width:590px){.heading{padding:10px 12px}.scroll{padding:10px}.box,.task{padding:11px}.doc-head,.doc{grid-template-columns:minmax(0,1fr) auto}.doc .actions{grid-column:1/-1;justify-content:flex-start}}
+  .event-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .event-line time{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  .doc .actions{gap:10px}.doc .actions a{border-left:1px solid #cbd5e1;padding-left:10px}
+  .pdf-viewer{margin-top:12px;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#f8fafc}
+  .pdf-viewer nav button[aria-pressed="true"]{background:#07558c;color:white;border-color:#07558c}
+  .viewer-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px}
+  @media(max-width:590px){.event-line time{white-space:normal}.event-line strong{min-width:0}.id-chip{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+<header class="top">PLN WORKSPACE · IWOMS</header>
+<main>
+  <h1>Preview Detail WO</h1>
+  <p class="muted">Contoh simulasi untuk meninjau desain modal.</p>
+  <article class="box overview">
+    <div><span class="badge" id="list-status">Menunggu kesiapan</span><h3>Pemeliharaan Insulator Penegang Fasa R</h3><p class="muted">048/WO/UP3 YOGYAKARTA.PREP/X/2026 · Tiang U2-20/56 · Penyulang Uji 4</p></div>
+    <div class="actions"><button class="button" data-open="detail">Detail</button><button class="button primary" data-open="task">Buka tugas</button></div>
+  </article>
+</main>
+<dialog aria-labelledby="wo-title">
+  <header class="heading">
+    <div class="modal-title"><strong id="wo-title">Detail WO</strong><button class="close" type="button" aria-label="Tutup modal">&times;</button></div>
+    <div class="id-chip">048/WO/UP3 YOGYAKARTA.PREP/X/2026<button type="button" id="copy-id" aria-label="Salin ID WO">&#10697;</button></div>
+    <h2>Pemeliharaan Insulator Penegang Fasa R</h2>
+    <p><span class="badge" id="modal-status">Menunggu kesiapan</span> &nbsp;|&nbsp; PLN UID Yogyakarta</p>
+  </header>
+  <div class="scroll">
+    <section class="box">
+      <h3>Informasi WO</h3>
+      <dl>
+        <div><dt>Unit pekerjaan</dt><dd>UP3 Sedayu</dd></div><div><dt>Pegawai yang mengajukan</dt><dd>Hendro Atmoko</dd></div><div><dt>Tanggal pengajuan</dt><dd>27 Oktober 2026</dd></div>
+        <div><dt>Lokasi pekerjaan</dt><dd>Jl Tangkilan Godean</dd></div><div><dt>Nomor tiang</dt><dd>U2-20/56</dd></div><div><dt>Gardu induk / Penyulang</dt><dd>GI 20 kV Godean / Godean 4</dd></div>
+        <div><dt>Jenis dan tinggi tiang</dt><dd>Beton &middot; 12 m</dd></div><div><dt>Jenis dan penampang penghantar</dt><dd>A3C &middot; 240 mm&sup2;</dd></div><div><dt>Kondisi operasi</dt><dd>PDKB &middot; Tanpa Padam</dd></div>
+      </dl>
+      <p class="description"><strong>Jenis pekerjaan</strong><br><span class="muted">02.04/TMSL/KOMISI PDKB PUSAT/2017</span><br>Pemeliharaan insulator penegang fasa R konstruksi dead end PDKB-TM metode sentuh langsung.</p>
+    </section>
+    <section class="box task" aria-labelledby="task-title">
+      <div class="task-heading"><div><p class="task-label">Tugas aktif</p><h3 id="task-title" tabindex="-1">Eksekusi Lapangan</h3></div><span class="role">Kepala Regu PDKB</span></div>
+      <ul class="checks">
+        <li><span><span class="mark" aria-hidden="true">&#9745;</span>Working Permit</span><span class="badge ok">Tercatat</span></li>
+        <li><span><span class="mark" aria-hidden="true">&#9745;</span>Briefing K3</span><span class="badge ok">Tercatat</span></li>
+        <li><span><span class="mark" aria-hidden="true">&#9745;</span>Pemeriksaan kesehatan</span><span class="badge ok">Tercatat</span></li>
+        <li><span><span class="mark" aria-hidden="true">&#9744;</span>Kesiapan sesuai alur PDKB</span><span class="badge">Menunggu verifikasi</span></li>
+      </ul>
+      <div class="actions"><button type="button" class="button" disabled>Mulai pekerjaan</button><span class="muted">Menunggu verifikasi kesiapan.</span></div>
+    </section>
+    <section class="box" aria-label="Dokumen dan riwayat">
+      <div class="tabs"><button type="button" data-panel="documents" aria-pressed="true">Dokumen <span class="badge">3</span></button><button type="button" data-panel="history" aria-pressed="false">Riwayat</button></div>
+      <div id="documents">
+        <div class="doc-head"><span>Dokumen</span><span>Versi</span></div>
+        <div class="doc"><strong>Formulir Survei</strong><span>Versi 1</span><div class="actions"><button class="button" type="button" data-pdf="DOC-02_SOP_01_Survey_Lokasi.pdf" aria-expanded="false">Lihat pratinjau</button><a class="button" href="assets/DOC-02_SOP_01_Survey_Lokasi.pdf" download>Unduh</a></div></div>
+        <div class="doc"><strong>Job Safety Analysis</strong><span>Versi 2</span><div class="actions"><button class="button" type="button" data-pdf="DOC-08_JSA_K3_PDKB.pdf" aria-expanded="false">Lihat pratinjau</button><a class="button" href="assets/DOC-08_JSA_K3_PDKB.pdf" download>Unduh</a></div></div>
+        <div class="doc"><strong>SP3B</strong><span>Versi 1</span><div class="actions"><button class="button" type="button" data-pdf="DOC-06_SOP_05_SP3B.pdf" aria-expanded="false">Lihat pratinjau</button><a class="button" href="assets/DOC-06_SOP_05_SP3B.pdf" download>Unduh</a></div></div>
+        <section id="pdf-viewer" class="pdf-viewer" aria-label="Pratinjau dokumen" hidden>
+          <nav id="pdf-titles" aria-label="Pilih dokumen" class="actions"></nav>
+          <div class="viewer-controls"><button type="button" class="button" id="pdf-prev" aria-label="Dokumen sebelumnya">&lt;</button><span id="pdf-position" aria-live="polite"></span><button type="button" class="button" id="pdf-next" aria-label="Dokumen selanjutnya">&gt;</button></div>
+          <iframe id="pdf" title="Pratinjau dokumen contoh"></iframe>
+        </section>
+      </div>
+      <div id="history" hidden><ol class="timeline">
+        <li><div class="event-line"><strong>Working Permit tercatat</strong><time>26 Nov 2026, 08.25 WIB</time></div><p class="muted">Kepala Regu Demo &middot; Kepala Regu PDKB</p></li>
+        <li><div class="event-line"><strong>Jadwal rencana ditetapkan</strong><time>24 Nov 2026, 14.10 WIB</time></div><p class="muted">Preparator Demo &middot; Preparator PDKB</p></li>
+        <li><div class="event-line"><strong>Usulan disahkan</strong><time>20 Nov 2026, 10.21 WIB</time></div><p class="muted">Manajer Demo &middot; Manajer Area</p></li>
+      </ol></div>
+    </section>
+    <section class="stages">
+      <h3>Hasil tahap sebelumnya</h3>
+      <details class="box"><summary><span>Persetujuan &amp; Penugasan<br><span class="muted">Usulan disahkan &middot; Manajer Area</span></span><span class="badge ok">&#10003; Selesai</span></summary><p class="stage-note">Asman, Supervisor, dan Manajer telah memeriksa usulan dalam simulasi.</p></details>
+      <details class="box" open><summary><span>Persiapan &amp; Penjadwalan<br><span class="muted">Survei layak &middot; Jadwal ditetapkan</span></span><span class="badge ok">&#10003; Selesai</span></summary><p class="stage-note">26 Nov 2026 &middot; 09.00 WIB &middot; Regu PDKB 01</p></details>
+      <details class="box"><summary><span>Rencana Operasi<br><span class="muted">Rencana koordinasi tercatat</span></span><span class="badge ok">&#10003; Selesai</span></summary><p class="stage-note">Rencana koordinasi dicatat untuk Penyulang Uji.</p></details>
+    </section>
+  </div>
+</dialog>
+<script>
+const modal=document.querySelector('dialog');
+const scroll=modal.querySelector('.scroll');
+const task=document.querySelector('.task');
+let opener;
+document.querySelectorAll('[data-open]').forEach(button=>button.addEventListener('click',()=>{
+  opener=button;
+  modal.showModal();
+  scroll.scrollTop=0;
+  if(button.dataset.open==='task'){
+    document.querySelector('#task-title').focus({preventScroll:true});
+    scroll.scrollTop=task.offsetTop-scroll.offsetTop-6;
+  }else modal.querySelector('.close').focus({preventScroll:true});
+}));
+modal.addEventListener('cancel',event=>event.preventDefault());
+modal.querySelector('.close').addEventListener('click',()=>modal.close());
+modal.addEventListener('close',()=>opener?.focus());
+document.querySelectorAll('[data-panel]').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('[data-panel]').forEach(tab=>{
+    const active=tab===button;
+    tab.setAttribute('aria-pressed',String(active));
+    document.getElementById(tab.dataset.panel).hidden=!active;
+  });
+}));
+const pdf=document.querySelector('#pdf');
+const viewer=document.querySelector('#pdf-viewer');
+const rows=[...document.querySelectorAll('[data-pdf]')];
+const previous=document.querySelector('#pdf-prev');
+const next=document.querySelector('#pdf-next');
+let currentIndex=-1;
+const titles=rows.map((button,index)=>{
+  const title=button.closest('.doc').querySelector('strong').textContent;
+  const tab=document.createElement('button');
+  tab.type='button';tab.className='button';tab.textContent=title;
+  tab.addEventListener('click',()=>openDocument(index));
+  document.querySelector('#pdf-titles').append(tab);
+  return tab;
+});
+function openDocument(index){
+  const button=rows[index];
+  if(!button)return;
+  currentIndex=index;
+  viewer.hidden=false;
+  pdf.src='assets/'+button.dataset.pdf;
+  pdf.title='Pratinjau '+titles[index].textContent;
+  previous.disabled=index===0;
+  next.disabled=index===rows.length-1;
+  document.querySelector('#pdf-position').textContent=(index+1)+' / '+rows.length;
+  rows.forEach((row,i)=>{
+    row.setAttribute('aria-expanded',String(i===index));
+    row.textContent=i===index?'Tutup pratinjau':'Lihat pratinjau';
+    titles[i].setAttribute('aria-pressed',String(i===index));
+  });
+}
+rows.forEach((button,index)=>button.addEventListener('click',()=>{
+  if(currentIndex===index&&!viewer.hidden){
+    viewer.hidden=true;
+    currentIndex=-1;
+    button.setAttribute('aria-expanded','false');
+    button.textContent='Lihat pratinjau';
+    pdf.removeAttribute('src');
+    return;
+  }
+  openDocument(index);
+  titles[index].focus({preventScroll:true});
+  viewer.scrollIntoView({block:'nearest'});
+}));
+previous.addEventListener('click',()=>openDocument(currentIndex-1));
+next.addEventListener('click',()=>openDocument(currentIndex+1));
+document.querySelector('#copy-id').addEventListener('click',async event=>{
+  const button=event.currentTarget;
+  await navigator.clipboard.writeText('048/WO/UP3 YOGYAKARTA.PREP/X/2026');
+  button.textContent='Tersalin';
+  setTimeout(()=>button.textContent=String.fromCharCode(10697),1200);
+});
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 (function(global){
   'use strict';
+  const details = typeof module !== 'undefined' && module.exports ? require('./document-details.js') : global.IwomsDocumentDetails;
   const routes = {
     Node_izin_tinggi_digunakan:['Periksa penggunaan izin', 'Node_gabung_penutupan_izin'],
     Node_lengkapi_izin_selesai:['Siapkan penutupan izin','Node_ttd_penutupan_izin_k3'],
@@ -50,11 +51,11 @@
       if(!type)fail('Unggahan tidak tersedia pada tahap ini.');
       requireText('name','nama berkas');
       if(typeof data.content!=='string'||data.content.length>2800000||!/^data:(application\/pdf|image\/(png|jpeg|webp));base64,[A-Za-z0-9+/=]+$/.test(data.content))fail('Pilih PDF atau gambar maksimal 2 MB.');
-      const file={id:global.crypto.randomUUID(),woId:wo.id,type:'support-file',documentType:type,forVersion:(latest(type)?.version||0)+1,name:data.name,content:data.content,at:now,createdBy:actor.id};
+      const file={id:global.crypto.randomUUID(),woId:wo.id,type:'support-file',caption:typeof data.caption==='string'?data.caption.trim().slice(0,500):'',documentType:type,forVersion:(latest(type)?.version||0)+1,name:data.name,content:data.content,at:now,createdBy:actor.id};
       state.documents.push(file);wo.documentIds.push(file.id);return true;
     }
     function add(type,extra={}){
-      const doc={id:global.crypto.randomUUID(),woId:wo.id,type,version:(latest(type)?.version||0)+1,payload:{Isi:data.reason||''},createdBy:actor.id,at:now,decisions:[],...extra};
+      const doc={id:global.crypto.randomUUID(),woId:wo.id,type,version:(latest(type)?.version||0)+1,payload:{Isi:data.reason||'',...details.extras(type,data,fail)},createdBy:actor.id,createdByName:actor.name,at:now,decisions:[],...extra};
       doc.fileIds=state.documents.filter(file=>file.woId===wo.id&&file.type==='support-file'&&file.documentType===type&&file.forVersion===doc.version).map(file=>file.id);
       state.documents.push(doc);wo.documentIds.push(doc.id);return doc;
     }
@@ -79,13 +80,16 @@
     if(node==='Node_lengkapi_izin_selesai')add('HEIGHT_CLOSURE',{sourcePermitId:wo.heightPermitId,status:'submitted'});
     if(node.startsWith('Node_ttd_penutupan_izin_')){
       if(!permitClose || data.documentVersionId!==permitClose.id)fail('Versi penutupan izin berubah.');
-      permitClose.decisions.push({...record,id:global.crypto.randomUUID(),result:'approved'});
+      permitClose.decisions.push({...record,id:global.crypto.randomUUID(),result:'approved',...details.signature(data,fail)});
     }
     if(node==='Node_arsip_izin_ketinggian'){
       if(permitClose?.decisions.length!==4 || data.documentVersionId!==permitClose.id)fail('Empat tanda tangan pada versi izin diperlukan.');
       permitClose.status='recorded';permitClose.recorded=record;
     }
-    if(node==='Node_laporan_hasil_kepala_regu')add('WORK_RESULT');
+    if(node==='Node_laporan_hasil_kepala_regu'){
+      details.storeWorkChecks(state,wo,node,data,actor,now,fail);
+      add('WORK_RESULT');
+    }
     if(['Node_susun_pemberitahuan','Node_revisi_pemberitahuan'].includes(node)){
       const result=latest('WORK_RESULT');
       if(!result)fail('Laporan hasil belum tersedia.');
@@ -95,7 +99,7 @@
       if(!notice || data.documentVersionId!==notice.id)fail('Versi pemberitahuan berubah.');
       if(review(node)){
         if(notice.status!=='submitted')fail('Versi ini tidak sedang diperiksa.');
-        notice.decisions.push({...record,id:global.crypto.randomUUID(),result:action==='closure-return'?'rejected':'approved'});
+        notice.decisions.push({...record,id:global.crypto.randomUUID(),result:action==='closure-return'?'rejected':'approved',...(action==='closure-next'?details.signature(data,fail):{})});
         if(action==='closure-return'){notice.status='rejected';follow(target[0],'Node_revisi_pemberitahuan');return true;}
       }
       if(node==='Node_kirim_pemberitahuan_mgr'){
@@ -138,7 +142,8 @@
   function documentType(node){
     if(uploads[node])return uploads[node];
     if(node?.startsWith('Node_ttd_penutupan_izin_')||node==='Node_arsip_izin_ketinggian')return 'HEIGHT_CLOSURE';
-    if(node&&(review(node)||['Node_kirim_pemberitahuan_mgr','Node_terima_pemberitahuan_mgr'].includes(node)))return 'COMPLETION_NOTICE';
+    if(node&&(review(node)||['Node_susun_pemberitahuan','Node_revisi_pemberitahuan','Node_kirim_pemberitahuan_mgr','Node_terima_pemberitahuan_mgr'].includes(node)))return 'COMPLETION_NOTICE';
+    if(node==='Node_laporan_harian')return 'DAILY_REPORT';
   }
   const api={handle,configuration,documentType};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;

@@ -1,6 +1,8 @@
 (function (global) {
   'use strict';
+  const details = typeof module !== 'undefined' && module.exports ? require('./document-details.js') : global.IwomsDocumentDetails;
   const PROCESS = 'pdkb-6aa0861f';
+  const proposalAssetKeys = ['officialWoNumber','workUnit','poleNumber','substation','feeder','poleType','poleHeight','conductorType','conductorArea','catalogCode'];
   const KEY = 'iwoms.pdkb.demo.v1';
   const UNIT = 'PLN UID YOGYAKARTA';
   const preparation = typeof module !== 'undefined' && module.exports ? require('./preparation.js') : global.IwomsPreparation;
@@ -184,6 +186,20 @@
         const wip = ['wip-save','wip-submit','wip-approve'].includes(action);
         if (!wip && (!task || task.unitId !== actor.unitId || (task.assigneeId && task.assigneeId !== actor.id))) fail('Tindakan ini bukan giliran Anda.', 'FORBIDDEN');
         switch (action) {
+          case 'survey-evidence': {
+            if (wo.stage!=='survey' || !['GAMBAR-LOKASI','PETA-LOKASI'].includes(data.slot)) fail('Bukti lokasi hanya diisi saat survei.');
+            required(data,['name','mime','content']);
+            if (!['image/png','image/jpeg'].includes(data.mime) || !/^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(data.content) || data.content.length>700000) fail('Gunakan PNG atau JPEG maksimal 512 KB.');
+            const forVersion=wo.surveyVersions.length+1;
+            const previous=next.documents.find(file=>file.woId===wo.id && file.type==='support-file' && file.documentType==='survey' && file.forVersion===forVersion && file.slot===data.slot);
+            if(previous){
+              next.documents=next.documents.filter(file=>file.id!==previous.id);
+              wo.documentIds=wo.documentIds.filter(id=>id!==previous.id);
+            }
+            const file={...clone(data),id:global.crypto.randomUUID(),woId:wo.id,type:'support-file',documentType:'survey',forVersion,createdBy:actor.id,at:now};
+            next.documents.push(file);wo.documentIds.push(file.id);
+            break;
+          }
           case 'wip-save':
           case 'wip-submit':
           case 'wip-approve':
@@ -198,7 +214,7 @@
             const slots = new Set();
             for (const file of files) {
               if (file.slot || action !== 'attach') {
-                if (!/^DOC-0[1-9]$/.test(file.slot) || slots.has(file.slot)) fail('Gunakan satu berkas untuk setiap kode dokumen.');
+                if (!/^(DOC-0[1-9]|GAMBAR-LOKASI|PETA-LOKASI)$/.test(file.slot) || slots.has(file.slot)) fail('Gunakan satu berkas untuk setiap kode dokumen.');
                 slots.add(file.slot);
                 const removed = new Set(next.documents.filter(item => item.woId === wo.id && item.type === 'proposal-attachment' && item.slot === file.slot).map(item => item.id));
                 next.documents = next.documents.filter(item => !removed.has(item.id));
@@ -258,10 +274,18 @@
             required(data, ['priority', 'workPlan']); wo.priority = data.priority; wo.workPlan = data.workPlan;
             if (!['Normal', 'Tinggi', 'Mendesak'].includes(data.priority)) fail('Prioritas tidak tersedia.');
             edge('Flow_0033'); move('survey'); break;
-          case 'survey':
+          case 'survey': {
             if (wo.stage !== 'survey') fail('WO tidak sedang disurvei.');
+            const surveyItems=details.rows('survey',data,fail);
+            if(surveyItems.length){
+              data.rows=surveyItems;
+              const text=items=>items.map(item=>[item.name,item.quantity,item.unit].join(' ')).join(' / ');
+              data.equipment=text(surveyItems.filter(item=>item.category!=='material')) || data.equipment;
+              data.material=text(surveyItems.filter(item=>item.category==='material')) || data.material;
+            }
             required(data, ['surveyDate', 'location', 'findings', 'access', 'equipment', 'material']);
             if (!validDate(data.surveyDate)) fail('Tanggal survei tidak valid.');
+            Object.assign(data,details.extras('survey',data,fail));
             wo.surveyVersions.push({ ...clone(data), version: wo.surveyVersions.length + 1, actorId: actor.id, at: now });
             edge('Flow_0034'); move('analysis');
             if (data.jsa || data.ibppr) {
@@ -270,6 +294,7 @@
               edge('Flow_0035'); move('feasibility');
             }
             break;
+          }
           case 'analysis':
             if (wo.stage !== 'analysis') fail('Analisis awal menunggu hasil survei.');
             required(data, ['jsa', 'ibppr']);
@@ -312,12 +337,20 @@
       wo.version += 1; wo.updatedAt = now;
       if (['survey', 'analysis'].includes(action)) {
         const doc = { id: global.crypto.randomUUID(), woId: wo.id, type: action === 'survey' ? 'survey' : 'initial-risk-analysis', version: action === 'survey' ? wo.surveyVersions.length : wo.initialAnalyses.length, data: clone(data), createdBy: actor.id, at: now };
+        if(action==='survey')doc.fileIds=next.documents.filter(file=>file.woId===wo.id && file.documentType==='survey' && file.forVersion===doc.version).map(file=>file.id);
         next.documents.push(doc); wo.documentIds.push(doc.id);
       }
       const previous = this.state.orders.find(order => order.id === wo.id);
+      const {signature:documentSignature,...auditData}=data;
+      for(const key of ['people','replacements']){
+        if(Array.isArray(auditData[key]))auditData[key]=auditData[key].map(person=>{
+          if(!person?.certificateFile)return person;
+          return {...person,certificateFile:{name:person.certificateFile.name}};
+        });
+      }
       const audit = { id: global.crypto.randomUUID(), woId: wo.id, processVersion: PROCESS, nodeId: auditNode || (action === 'create' ? 'Node_start_' + suffix(actor.role) : previous.nodeId),
         nextNodeId: auditTarget || wo.nodeId, edgeIds: trail, action, actor: clone(actor), at: now, version: wo.version,
-        data: action === 'attach-many' ? {files: data.files.map(({slot,name,mime}) => ({slot,name,mime}))} : ['attach', 'document-file'].includes(action) ? { name: data.name, mime: data.mime } : clone(data),
+        data: action === 'attach-many' ? {files: data.files.map(({slot,name,mime}) => ({slot,name,mime}))} : ['attach', 'document-file','survey-evidence'].includes(action) ? { name: data.name, mime: data.mime, slot:data.slot } : clone(auditData),
         documentVersionId: data.documentVersionId || (['document-submit', 'document-file'].includes(action) ? next.documents.at(-1)?.id : null),
         taskId: previous ? wo.id + ':' + previous.version : null };
       next.audits.push(audit);
@@ -334,7 +367,7 @@
     proposal(data, complete) {
       if (complete) required(data, ['nama_wo', 'lokasi', 'katalog_id', 'proses_bisnis', 'uraian']);
       const result = {};
-      for (const key of ['nama_wo', 'lokasi', 'katalog_id', 'nama_pekerjaan', 'proses_bisnis', 'uraian', 'kategori', 'preferensi_tanggal']) result[key] = String(data[key] || '');
+      for (const key of ['nama_wo', 'lokasi', 'katalog_id', 'nama_pekerjaan', 'proses_bisnis', 'uraian', 'kategori', 'preferensi_tanggal', ...proposalAssetKeys]) result[key] = String(data[key] || '');
       result.kondisi_operasi = 'Tanpa Padam'; result.penugasan = 'Internal PLN';
       return result;
     }
@@ -371,7 +404,7 @@
       this.storage.setItem(this.key, JSON.stringify(next)); this.state = next;
     }
   }
-  const api = { Repository, KEY, UNIT, PROCESS, stages, proposers, clone };
+  const api = { proposalAssetKeys, Repository, KEY, UNIT, PROCESS, stages, proposers, clone };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.IwomsWorkflow = api;
 })(typeof window !== 'undefined' ? window : globalThis);
