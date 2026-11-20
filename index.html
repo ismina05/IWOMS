@@ -260,7 +260,7 @@
     html, body {
       overflow-x: clip;
     }
-    [v-cloak] { display: none; }
+    [v-cloak] { display: none !important; }
     /* PDKB Hazard Striping */
     .pdkb-stripes {
       background: repeating-linear-gradient(
@@ -352,7 +352,16 @@
 
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen">
-  <p id="iwoms-startup" role="status" style="padding: 1rem; font-family: system-ui">Memuat IWOMS…</p>
+  <div id="iwoms-startup" role="status" style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background-color: #f8fafc; font-family: 'Geist', system-ui, sans-serif; color: #005E82; font-weight: 500; font-size: 15px;">
+    <div style="display: flex; align-items: center; gap: 12px; background: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+      <svg style="animation: spin 1s linear infinite; width: 20px; height: 20px; color: #005E82;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>Memuat IWOMS PLN…</span>
+    </div>
+    <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+  </div>
   <div id="app" v-cloak class="min-h-screen flex flex-col">
 
     <!-- ==================== PLN WORKSPACE ENTERPRISE HEADER ==================== -->
